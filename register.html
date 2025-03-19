@@ -4,7 +4,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&family=Rubik+Wet+Paint&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.8">
-    <img src="CITLogo.png" alt="Logo" class="logo">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRK_m6KiI839yvOdiN_B0Yw_fU3rkWuvFiFA&s" alt="Logo" class="logo">
     <title>Register Page</title>
     <style>
         body {
@@ -52,9 +52,103 @@
     <h1>Register New User</h1>
     <form method="POST", action="">
         <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" required type="email" value="">
+        </div>
+        <div>
+            <label for="password">New Password</label>
+            <input id="password" name="password" required type="password" value="">
+        </div>
+        <div>
+            <input type="submit" id="submit" name="submit" value="Register">
+        </div>
+    </form></br>
+    <a href='/'>Login</a></br> 
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+</head>
+<body>
+    <h1>Register New User</h1>
+    <form method="POST", action="">
+        <div>
             <label for="username">Username</label>
             <input id="username" maxlength="100" minlength="2" name="username" required size="32" type="text" value="">
         </div>
+        <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" required type="email" value="">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input id="password" name="password" required type="password" value="">
+        </div>
+       
+        <div>
+            <button id="submit" name="submit" required type="submit" value="Register" style="height:20px; width:80px">
+        </div>
+    </form></br>
+    <a href='/'>Home</a></br>
+    <a href='/login'>Login</a></br>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+</head>
+<body>
+    <h1>Register New User</h1>
+    <form method="POST", action="">
         <div>
             <label for="email">Email</label>
             <input id="email" name="email" required type="email" value="">
@@ -67,11 +161,17 @@
             <label for="confirm_password">Confirm Password</label>
             <input id="confirm_password" name="confirm_passowrd" required type="password" value="">
         </div>
+        
+        <div>
+            <label for="code">Admin Code</label>
+            <input id="code" name="code" type="password" value="">
+        </div>
+        
         <div>
             <input id="submit" name="submit" required type="submit" value="Register">
         </div>
     </form></br>
-    <a href='/login.html'>Already have an account?</a></br>
     <a href='/'>Home</a></br>
+    <a href='/login'>Login</a></br>
 </body>
-</html>
+</html> -->
