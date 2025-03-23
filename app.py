@@ -65,6 +65,12 @@ def create_app():
                     print(e)
 
         return render_template("register.html", form = form)
+
+    #Test to see users displayed - DELETE LATER FOR SECURITY PURPOSES!
+    @app.route("/displayNames")
+    def displayNames():
+        users = User.query.all()
+        return {user.email: user.password for user in users}
     
     return app
 
