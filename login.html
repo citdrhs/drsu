@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRK_m6KiI839yvOdiN_B0Yw_fU3rkWuvFiFA&s" alt="Logo" class="logo">
-    <title>CIT Signups Login Page</title>
+    <title>Login Page</title>
     <style>
         body {
             font-family: 'Baloo Bhaijaan 2', sans-serif;
@@ -49,9 +49,8 @@
     </style>    
 </head>
 <body>
-    <h1>CIT Signups Login</h1>
+    <h2>Login</h2>
     <form method="POST", action="/">
-        {{ form.hidden_tag() }} 
         <div>
             <label for="email">Email</label>
             <input id="email" name="email" required type="email" value="">
@@ -59,6 +58,10 @@
         <div>
             <label for="password">Password</label>
             <input id="password" name="password" required type="password" value="">
+        </div>
+        <div>
+            <label for="adminCode">Admin Code(If applicable)</label>
+            <input id="adminCode" name="adminCode" type="password" value="">
         </div>
         <div>
             <input type="submit" id="submit" name="submit" value="Login">
