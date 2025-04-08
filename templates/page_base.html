@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!--Placeholder for extra styling and js for home page and signup pages-->
+    {% block extra_styling_js %} {% endblock %}
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <!--Header-->
+    <div id="headerSection">
+        <!--Linking to index.html covered in script.js because <a> tags interrupt formatting-->
+        <section id="homePage">
+            <img src="{{ url_for('static', filename='CITLogo.png') }}" alt="Logo" id="CITLogo">
+            <p id="CITSignups">CIT Signups</p>
+        </section>
+        <!--<img src="./CalendarIcon.png" id="calendarIcon">-->
+        <p class="headerItem" id="calendarText"><a href="{{ url_for('calendar') }}" class="headerLink">Calendar</a></p>
+        
+    </div>
+
+    <div id="optionBarTrigger">
+        <p class="headerItem" id="signinText">Sign in</p>
+    </div>
+    <section id="dropdown">
+        <p id="accountDetails">Account Details</p>
+        <p id="logOut">Log Out</p>
+    </section>
+
+    <div id="bodySection">
+        <!--Placeholder for page heading and expectations for home page and event details for signup pages-->
+        {% block heading %} {% endblock %}
+
+        {% block content %} {% endblock %}
+    </div>
+</body>
+</html>

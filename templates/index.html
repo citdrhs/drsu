@@ -1,0 +1,72 @@
+<!--Inherits page_base template-->
+{% extends 'page_base.html' %}
+
+<head>
+    {% block title %} {{ event_name }} Signup {% endblock %}
+    {% block extra_styling_js %}
+        <script src="{{ url_for('static', filename='dimmer.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='rain.js') }}" defer></script>
+    {% endblock %}
+</head>
+
+{% block heading %}
+    <!--Body-->
+    <div id="bodySection">
+        <section class="roundedBox" id="welcome">
+            <h1>Welcome to CIT Signups!</h1>
+        </section>
+        <section class="roundedBox" id="expectations">
+            <h2>Expectations</h2>
+            <p>All CIT Signups users are expected to abide by the following:</p>
+            <ul>
+                <li>Users are expected to use CIT Signups responsibly in accordance with the HCPS Code of Conduct and the expectations outlined in the CIT Handbook. Violation of these rules will not be tolerated.</li>
+                <li>All signups must be relevant, school-appropriate, and aligned with the requirements for that item (eg. allergen-free foods).</li>
+            </ul>
+        </section>
+{% endblock %}
+
+{% block content %}
+
+        <section class="roundedBox" id="events">
+            <h2>Upcoming Events</h2>
+            <section id="#eventsMenu">
+                <!--Backend interaction: Create a new signup page for the event and create an event button linking to that page-->
+                <!--UNCOMMENT THIS AND COMMENT FOLLOWING LINE FOR FRONTEND TESTING: <a href="./thanksgiving-feast-1.html">-->
+                <a href="{{ url_for('signup', signup_id = 1) }}">
+                    <section class="roundedBox eventBox">
+                        <!--Backend interaction: Displays the correct background image - make it a class instead of id?-->
+                        <h1 class="eventTitle" id="thanksgivingFeastTitle"><span class="eventDimmer">CIT Thanksgiving Feast</span></h1>
+                        <section class="eventInfo">
+                            <!--Backend interaction: Grab and display date and time-->
+                            <p><b>Date: </b>Monday, November 25th, 2024</p>
+                            <p><b>Time and Location: </b>5:00pm-7:00pm @ Commons 1</p>
+                            <!--Backend interaction: Insert event organizer email in href attribute and in the inner text of a-->
+                            <p><b>Contact:</b> Jack Gardner - <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hcps-gardnejk1@henricostudents.org" target="_blank" class="emailLink">hcps-gardnejk1@henricostudents.org</a></p>
+                        </section>
+                    </section>
+                </a>
+                <section class="roundedBox eventBox">
+                    <!--Backend interaction: Displays the correct background image - make it a class instead of id?-->
+                    <h1 class="eventTitle" id="winterGatheringTitle">CIT Winter Gathering</h1>
+                    <section class="eventInfo">
+                        <!--Backend interaction: Grab and display date and time-->
+                        <p><b>Date: </b>Monday, December 11th, 2024 </p>
+                        <p><b>Time and Location: </b>11:35am-12:35pm @ SC4</p>
+
+                        <!--Backend interaction: Insert event organizer email in href attribute and in the inner text of a-->
+                        <p><b>Contact:</b> Zachary Lin - <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hcps-linzc@henricostudents.org" target="_blank" class="emailLink">hcps-linzc@henricostudents.org</a></p>
+                    </section>
+                </section>
+            </section>
+        </section>
+
+        <section id="footer">
+
+
+        </section>
+
+        <div class="binary-container"></div>
+
+    </div>
+
+{% endblock %}

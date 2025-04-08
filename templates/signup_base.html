@@ -1,0 +1,35 @@
+<!--Inherits page_base template and adds event signup details-->
+{% extends 'page_base.html' %}
+
+<head>
+    {% block title %} {{ event_name }} Signup {% endblock %}
+    {% block extra_styling_js %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+    {% endblock %}
+</head>
+
+{% block heading %}
+
+    <section class="roundedBox" id="welcome">
+        <!--Page Heading-->
+        <h1>{{ event_name }} Signup</h1>
+    </section>
+
+    <!--Event Details-->
+    <section class="roundedBox eventDetails">
+        <!--Backend interaction: Insert event details (name, date, time, location, meal coordinator info, extra notes)-->
+        <!--Based on data in the database that was logged down when admin created the event signup using the template-->
+        <h2>{{ event_name }}</h2>
+        <p><b>Date:</b> Monday, November 25th, 2024</p>
+        <p><b>Time:</b> 5:00pm-7:00pm</p>
+        <p><b>Location:</b> {{ location }}</p>
+        <p><b>Meal Coordinator:</b> [Student Name] [Student Email] [Student Phone Number]</p>
+        <p><i>Please drop off food in SC4 in the morning before school starts!</i></p>
+    </section>
+
+    <br>
+
+{% endblock %}
+
+{% block content %} {% endblock %}
+
