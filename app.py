@@ -4,6 +4,7 @@ from forms import RegisterForm, LoginForm
 from models import db, User
 from flask_bcrypt import Bcrypt
 import os
+import psycopg2
 from dotenv import load_dotenv
 
 # Load variables from .env
@@ -22,9 +23,57 @@ def create_app():
         bcrypt.init_app(app)
         db.create_all()
 
-    @app.route("/home")
-    def home():
-         return render_template("home.html")
+    #Establishes connection with database
+    def get_db_connection():
+        conn = psycopg2.connect(
+            host='drhscit.org', 
+            database=os.environ.get('DB'),
+            user=os.environ.get('DB_UN'), 
+            password=os.environ.get('DB_PW')
+        )
+        print('db connected')
+        return conn
+
+    #@app.route("/home")
+    #def home():
+    #     return render_template("home.html")
+    
+    #Display home page
+    @app.route("/homePage")
+    def homePage():
+         return render_template("index.html")
+    
+    #Display calendar page
+    @app.route("/calendar")
+    def calendar():
+        return render_template("calendar.html")
+    
+    #Display event signup (based on id in SQL events table)
+    @app.route("/signup/<int:signup_id>")
+    def signup(signup_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        #Adding in data to test table to test
+        cur.execute('DROP TABLE IF EXISTS test_signup_id;')
+        cur.execute('CREATE TABLE test_signup_id (id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, event_name TEXT);')
+        cur.execute('INSERT INTO test_signup_id (event_name)'
+                    'VALUES (%s)',
+                    ('Thanksgiving Feast',)
+        )
+        conn.commit()
+
+
+        cur.execute('SELECT * FROM test_signup_id WHERE id = %s', (signup_id,))
+        #Converts event name into HTML filename by:
+        #Replacing all spaces with dashes, making it all lowercase, and adding '-[id#].html' to the end
+        #Ex. If Freshman-Sophomore Social has an id of 3:
+        #Freshman-Sophomore Social --> freshman-sophomore-social-3.html
+        event_data = cur.fetchall()
+        filename = event_data[0][1].replace(' ', '-').lower() + '-' + str(event_data[0][0]) + '.html'
+        print(filename)
+        cur.close()
+        conn.close()
+        return render_template(filename, event_name = 'Thanksgiving Feast', location = 'Commons 1')
     
     @app.route("/", methods=['GET','POST'])
     def index():
@@ -40,7 +89,7 @@ def create_app():
             if user and bcrypt.check_password_hash(user.password, form.password.data):
                 session['email'] = user.email
                 print("successfully validated user")
-                return redirect(url_for('home'))
+                return redirect(url_for('homePage'))
             else:
                 print("Error validating user. Please check email and password")
         else:
@@ -68,6 +117,12 @@ def create_app():
                     print(e)
 
         return render_template("register.html", form = form)
+    
+    #Test to see users displayed - DELETE LATER FOR SECURITY PURPOSES!
+    @app.route("/displayNames")
+    def displayNames():
+        users = User.query.all()
+        return {user.email: user.password for user in users}
     
     return app
 
