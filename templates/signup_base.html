@@ -6,6 +6,7 @@
     {% block extra_styling_js %}
         <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
     {% endblock %}
+    <script src="{{ url_for('static', filename='signupScript.js') }}" defer></script>
 </head>
 
 {% block heading %}
@@ -28,8 +29,154 @@
     </section>
 
     <br>
+    
 
 {% endblock %}
 
-{% block content %} {% endblock %}
+{% block content %}
+
+    <!--Backend interaction: Use a for in loop to display all tables for a particular event (remove hard coding)-->
+    <section id="tables">
+        <!--<table id="dessertSignup">
+            <thead>
+                <tr>
+                    <th id="dessert_th" colspan="4">Desserts (5/5 available slots)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            
+            </tbody>
+
+            <tfoot>
+                <tr class="signUp">
+                    <td colspan="4"><button class="signUpButton" id="dessertSignupButton">Sign up</button></td>
+                </tr>
+            </tfoot>
+        </table>-->
+        <!--{% for table in tables %}
+            <table id="{{table[]}}Signup">
+                <thead>
+                    <tr>
+                        <th id="{{table[]}}_th" colspan="4">{{table[]}}s ({{table[]}}/{{table[]}} available slots)</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Dish</td>
+                    <td>Email</td>
+                    <td></td>
+                </tr>
+                    
+                 {% for entry in signups %}
+                    <td>entry[]</td>
+                    <td>entry[]</td>
+                     <tbody>
+                  <td>entry[]</td>
+                    <td>
+                        <a href="url_for()"><button>Delete</button></a>
+                    </td>
+                    {% endfor %}
+                </tbody>
+    
+                <tfoot>
+                    <tr class="signUp">
+                        <td colspan="4">
+                            <button class="signUpButton" id="SignupButton">Sign up</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table> 
+        {% endfor %}-->
+
+        {% for table, signups in signup_tables.items() %}
+            <table id="{{ table.lower() }}Signup">
+                <thead>
+                    <tr>
+                        <th id="{{ table }}_th" colspan="4">
+                            {{ table.capitalize() }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td>Dish</td>
+                        <td>Email</td>
+                        <td></td>
+                    </tr>
+
+                    {% for signup in signups %}
+                        <tr>
+                            <td>{{ signup[3] }}</td>
+                            <td>{{ signup[4] }}</td>
+                            <td>{{ signup[3] }}</td>
+                            <td>
+                                <a href="{{ url_for('delete_signup', id=signup[0]) }}">
+                                    <button>Delete</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="signUp">
+                        <td colspan="4">
+                            <button class="signUpButton" id="{{ table }}">Sign up</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br>
+        {% endfor %}
+
+
+    </section>
+    <p>Add a Table</p>
+    <form id="tableForm">
+    <label for="tableName">Category Name:</label>
+    <input type="text" id="tableName" required>
+
+    <label for="maxEntries">Max Entries:</label>
+    <input type="number" id="maxEntries">
+
+    <button id="addTable">Add Table</button>
+    </form>
+
+    <!--Popup to sign up for an item-->
+    <div id="inputs">
+        <section id="inputHeader">
+            <h3 id="signUpHeader">Sign Up!</h3>
+            <img src="{{ url_for('static', filename='CloseButton.png') }}" id="closeSignUp">
+        </section>
+        <section>
+            <form id="signupForm">
+                <label for="nameInput">Name:</label>
+                <input type="text" id="nameInput" required>
+                <br>
+                <label for="dishNameInput">Dish Name:</label>
+                <input type="text" id="dishNameInput" required>
+                <br>
+                <label for="emailInput">Email:</label>
+                <input type="email" id="emailInput" required>
+            </form>
+            
+            <br>
+            <input type="text" id="extras" placeholder="Other Comments (Optional)">
+            <br>
+            <button id="confirm">Confirm</button>
+        </section>
+    </div>
+
+    <div id="deletePopup">
+        <p>Are you sure you want to delete this entry?</p>
+        <button id="confirmDelete">Confirm</button>
+        <button id="cancelDelete">Cancel</button>
+    </div>
+
+    <section id="footer">
+
+    </section>
+
+{% endblock %}
 
