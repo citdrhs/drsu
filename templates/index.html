@@ -2,7 +2,7 @@
 {% extends 'page_base.html' %}
 
 <head>
-    {% block title %} {{ event_name }} Signup {% endblock %}
+    {% block title %} CIT Signups Home Page {% endblock %}
     {% block extra_styling_js %}
         <script src="{{ url_for('static', filename='dimmer.js') }}" defer></script>
         <script src="{{ url_for('static', filename='rain.js') }}" defer></script>
@@ -10,8 +10,6 @@
 </head>
 
 {% block heading %}
-    <!--Body-->
-    <div id="bodySection">
         <section class="roundedBox" id="welcome">
             <h1>Welcome to CIT Signups!</h1>
         </section>
@@ -26,7 +24,7 @@
 {% endblock %}
 
 {% block content %}
-
+    
         <section class="roundedBox" id="events">
             <h2>Upcoming Events</h2>
             <section id="#eventsMenu">
