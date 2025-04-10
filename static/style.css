@@ -314,8 +314,7 @@ section a {
 .binary {
     position: absolute;
     /*color: rgb(46, 222, 46);*/
-    /*color: rgb(0, 96, 206);*/
-    color: rgb(66, 154, 255);
+    color: rgb(0, 96, 206);
     font-family: monospace;
     font-size: 2vw;
     opacity: 0.8;
