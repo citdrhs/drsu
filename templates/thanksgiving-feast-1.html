@@ -1,31 +1,10 @@
 <!--Inherits signup_base template-->
 {% extends 'signup_base.html' %}
 
-{% block content %}
-
+    
     <!--Backend interaction: Use a for in loop to display all tables for a particular event (remove hard coding)-->
-    <!--Appetizers Table-->
     <section id="tables">
-        <!--<table id="appetizerSignup">
-            <thead>
-                <tr>
-                    <th id="appetizer_th" colspan="4">Appetizers (10/10 available slots)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-            </tbody>
-
-            <tfoot>
-                <tr class="signUp">
-                    <td colspan="4"><button class="signUpButton" id="appetizerSignupButton">Sign up</button></td>
-                </tr>
-            </tfoot>
-        </table>
-
-        <br>
-
-        <table id="dessertSignup">
+        <!--<table id="dessertSignup">
             <thead>
                 <tr>
                     <th id="dessert_th" colspan="4">Desserts (5/5 available slots)</th>
@@ -42,6 +21,40 @@
                 </tr>
             </tfoot>
         </table>-->
+        <!--UNCOMMENT TO TEST WITHOUT INHERITANCE {% for table in tables %}
+            <table id="{{table[]}}Signup">
+                <thead>
+                    <tr>
+                        <th id="{{table[]}}_th" colspan="4">{{table[]}}s ({{table[]}}/{{table[]}} available slots)</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Dish</td>
+                    <td>Email</td>
+                    <td></td>
+                </tr>
+                    
+                <tbody>
+                    {% for entry in signups %}
+                    <td>entry[]</td>
+                    <td>entry[]</td>
+                    <td>entry[]</td>
+                    <td>
+                        <a href="url_for()"><button>Delete</button></a>
+                    </td>
+                    {% endfor %}
+                </tbody>
+    
+                <tfoot>
+                    <tr class="signUp">
+                        <td colspan="4">
+                            <button class="signUpButton" id="SignupButton">Sign up</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table> 
+        {% endfor %}
     </section>
     <p>Add a Table</p>
     <form id="tableForm">
@@ -52,10 +65,10 @@
     <input type="number" id="maxEntries">
 
     <button id="addTable">Add Table</button>
-    </form>
+    </form>UNCOMMENT TO TEST WITHOUT INHERITANCE-->
 
     <!--Popup to sign up for an item-->
-    <div id="inputs">
+    <!--UNCOMMENT TO TEST WITHOUT INHERITANCE <div id="inputs">
         <section id="inputHeader">
             <h3 id="signUpHeader">Sign Up!</h3>
             <img src="{{ url_for('static', filename='CloseButton.png') }}" id="closeSignUp">
@@ -87,6 +100,4 @@
 
     <section id="footer">
 
-    </section>
-
-{% endblock %}
+    </section>UNCOMMENT TO TEST WITHOUT INHERITANCE-->
