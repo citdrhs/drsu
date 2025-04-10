@@ -1,41 +1,26 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <!--Tab name-->
-        <title>CIT Signups</title>
+<!--Inherits page_base template-->
+{% extends 'page_base.html' %}
 
-        <link href="./style.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <script src="./script.js" defer></script>
-    </head>
-    <body>
-        <!--Header-->
-        <div id="headerSection">
-            <section id="homePage">
-                <img src="./CITLogo.png" alt="Logo" id="CITLogo">
-                <p id="CITSignups">CIT Signups</p>
-            </section>
-            <!--<img src="./CalendarIcon.png" id="calendarIcon">-->
-            <p class="headerItem" id="calendarText"><a href="./calendar.html" class="headerLink">Calendar</a></p>
-        </div>
+<head>
+    {% block title %} CIT Signups Calendar {% endblock %}
+</head>
 
-        <div id="optionBarTrigger">
-            <p class="headerItem" id="signinText">Sign in</p>
-        </div>
-        <section id="dropdown">
-            <p id="accountDetails">Account Details</p>
-            <p id="logOut">Log Out</p>
-        </section>
+{% block heading %}
+    <section class="roundedBox" id="welcome">
+        <h1>Calendar</h1>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <!--Body-->
+    <section class="roundedBox" id="calendar">
+        <h2>Calendar goes here</h2>
+    </section>
+    
+    <section id="footer">
+
+    </section>
+{% endblock %}
+
         
-        <!--Body-->
-        <div id="bodySection">
-            <section class="roundedBox" id="calendar">
-                <h2>Calendar goes here</h2>
-            </section>
-            
-            <section id="footer">
-
-            </section>
-        </div>
-    </body>
-</html>
+        
