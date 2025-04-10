@@ -6,6 +6,8 @@ from flask_bcrypt import Bcrypt
 import os
 import psycopg2
 from dotenv import load_dotenv
+from collections import defaultdict
+
 
 # Load variables from .env
 load_dotenv()
@@ -33,10 +35,6 @@ def create_app():
         )
         print('db connected')
         return conn
-
-    #@app.route("/home")
-    #def home():
-    #     return render_template("home.html")
     
     #Display home page
     @app.route("/homePage")
@@ -70,11 +68,53 @@ def create_app():
         #Freshman-Sophomore Social --> freshman-sophomore-social-3.html
         event_data = cur.fetchall()
         filename = event_data[0][1].replace(' ', '-').lower() + '-' + str(event_data[0][0]) + '.html'
-        print(filename)
+        
+        #Add GROUP BY item to group it by appetizer, dessert, etc. (might need to SELECT item and GROUP, then join to the rest of table to avoid error)
+        cur.execute('SELECT * FROM test_event_signup WHERE event_id = %s', (signup_id,))
+        signup_data = cur.fetchall()
+        print(signup_data)
+
+        #Sort table by item column (appetizer, dessert, etc.)        
+        signup_data_sorted = sorted(signup_data, key=lambda signup: signup[2])
+        for signup in signup_data_sorted:
+            print(signup)
+
+        
+        signup_dict = {}
+        
+        #Start index where the dictionary starts selecting data from
+        startIndex = 0
+
+        #Item name is appetizer, dessert, etc.
+        for index in range(len(signup_data_sorted)):
+            previousItemName = signup_data_sorted[index-1][2]
+            currentItemName = signup_data_sorted[index][2]
+            if index > 0 and (currentItemName != previousItemName):
+                #Once a new item name is recognized, assigns the rows up to the new item name to the item name
+                #Ex. All the appetizer data rows are assigned to the key 'Appetizer';
+                signup_dict[previousItemName] = signup_data_sorted[startIndex:index]
+                startIndex = index
+            if index == len(signup_data_sorted)-1:
+                signup_dict[currentItemName] = signup_data_sorted[startIndex:]
+
+        print(signup_dict)
+
         cur.close()
         conn.close()
-        return render_template(filename, event_name = 'Thanksgiving Feast', location = 'Commons 1')
+        return render_template(filename, event_name = 'Thanksgiving Feast', location = 'Commons 1', signup_tables = signup_dict)
     
+    @app.route('/delete_signup/<int:id>/')
+    def delete_signup(id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT event_id FROM test_event_signup WHERE id = %s', (id,))
+        eventID = cur.fetchall()
+        cur.execute('DELETE FROM test_event_signup WHERE id = %s', (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('signup', signup_id = eventID[0][0]))
+
     @app.route("/", methods=['GET','POST'])
     def index():
         form = LoginForm()
