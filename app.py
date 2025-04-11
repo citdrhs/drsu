@@ -6,7 +6,6 @@ from flask_bcrypt import Bcrypt
 import os
 import psycopg2
 from dotenv import load_dotenv
-from collections import defaultdict
 
 
 # Load variables from .env
