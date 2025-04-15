@@ -1,19 +1,21 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, DateField, SelectField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 
 class RegisterForm(FlaskForm):
     #username = StringField('Username', validators= [DataRequired(), Length(min=2, max=100)])
     email = StringField('Email', validators = [DataRequired(), Email()])
-    firstName = StringField('FirstName', validators = [DataRequired()])
-    lastName = StringField('LastName', validators = [DataRequired()])
-    grade = IntegerField('grade')
+    first_name = StringField('FirstName', validators = [DataRequired()])
+    last_name = StringField('LastName', validators = [DataRequired()])
+    grade = SelectField('Grade', choices=[('8', '8'),('9', '9'), ('10', '10'), ('11', '11'), ('12', '12')], coerce=int)
     password = PasswordField('Password', validators = [DataRequired()])
+    is_admin = BooleanField(default=False)
     submit = SubmitField('Register')
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators = [DataRequired(), Email()])
     password = PasswordField('Password', validators = [DataRequired()])
+    adminCode = IntegerField('Admin Code')
     submit = SubmitField('Sign In')
 
 # class Event(FlaskForm):
