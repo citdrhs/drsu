@@ -6,9 +6,9 @@
  - Logo expands when hovers and directs to home page when clicked
  - Signing up for events base functionality on thanksgivingSignup.html
  - Colors, font, and general theme of website established
+ - Register and sign in functionality
+ - Functionality for admin with admin code
 #
  Future updates:
- - Sign in functionality on home page
- - Calendar
+ - Calendar (in progress)
  - RSVP functionality
- - Local storage and back end
