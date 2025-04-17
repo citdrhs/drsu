@@ -48,7 +48,7 @@ def create_app():
     
     #Admin Code update for login
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu", methods=['GET', 'POST'])
+    @app.route("/drsu/", methods=['GET', 'POST'])
     #@app.route("/", methods=['GET', 'POST'])
     def index():
         form = LoginForm()
@@ -95,14 +95,14 @@ def create_app():
         return render_template("login.html", form=form)
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/logout", methods=['GET', 'POST'])
+    @app.route("/drsu/logout/", methods=['GET', 'POST'])
     #@app.route("/logout", methods=['GET', 'POST'])
     def logout():
         session.clear()
         return redirect(url_for('index'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/register", methods=['GET', 'POST'])
+    @app.route("/drsu/register/", methods=['GET', 'POST'])
     #@app.route("/register", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
@@ -149,7 +149,7 @@ def create_app():
 
     #Display home page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/homePage")
+    @app.route("/drsu/homePage/")
     #@app.route("/homePage")
     def homePage():
         is_admin = session.get('is_admin', False)
@@ -197,8 +197,9 @@ def create_app():
     
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_event", methods=['POST'])
+    @app.route("/drsu/add_event/", methods=['POST'])
     #@app.route("/add_event", methods=['POST'])
+    
     def add_event():
         event_name = request.form['event_name']
         event_date = request.form['event_date']
@@ -237,7 +238,7 @@ def create_app():
 
     #Display calendar page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/calendar")
+    @app.route("/drsu/calendar/")
     #@app.route("/calendar")
     def calendar():
         return render_template("calendar.html")
@@ -340,7 +341,7 @@ def create_app():
         )
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/signup/<int:table_id>', methods=['POST'])
+    @app.route('/drsu/signup/<int:table_id>/', methods=['POST'])
     #@app.route('/signup/<int:table_id>', methods=['POST'])
     def signup(table_id):
         #Email taken from the current user's email 
@@ -386,7 +387,7 @@ def create_app():
         #Connect to database
         conn = get_db_connection()
         cur = conn.cursor()
-
+    
         cur.execute('SELECT t1.event_id FROM event_tables as t1 Join event_signups as t2 On t1.id=t2.table_id WHERE t2.id = %s', (id,))
         #Data is in within a tuple inside a list: [(id)] so cur.fetchall()[0][0] is needed to grab the actual number
         eventID = cur.fetchall()[0][0]
@@ -421,7 +422,7 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_table/<int:event_id>", methods=['POST'])
+    @app.route("/drsu/add_table/<int:event_id>/", methods=['POST'])
     #@app.route("/add_table/<int:event_id>", methods=['POST'])
     def add_table(event_id):
         print("entered add table")
