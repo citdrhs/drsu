@@ -1,0 +1,106 @@
+<!--Inherits page_base template-->
+{% extends 'page_base.html' %}
+
+<head>
+    {% block title %} CIT Signups Home Page {% endblock %}
+    {% block extra_styling_js %}
+        <script src="{{ url_for('static', filename='dimmer.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='rain.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='indexScript.js') }}" defer></script>
+    {% endblock %}
+</head>
+
+{% block heading %}
+        <section class="roundedBox" id="welcome">
+            <h1>Welcome to CIT Signups!</h1>
+        </section>
+        <section class="roundedBox" id="expectations">
+            <h2>Expectations</h2>
+            <p>All CIT Signups users are expected to abide by the following:</p>
+            <ul>
+                <li>Users are expected to use CIT Signups responsibly in accordance with the HCPS Code of Conduct and the expectations outlined in the CIT Handbook. Violation of these rules will not be tolerated.</li>
+                <li>All signups must be relevant, school-appropriate, and aligned with the requirements for that item (eg. allergen-free foods).</li>
+            </ul>
+        </section>
+{% endblock %}
+
+{% block content %}
+    
+        <section class="roundedBox" id="events">
+            <h2>Upcoming Events</h2>
+            {% if admin %}
+                <button class="big-button" id="showAddEventInput">Add an event</button>
+                <br><br>
+            {% endif %}
+            <section id="#eventsMenu">
+                {% for event in events %}
+                
+                    <a href="{{ url_for('viewEvent', event_id = event[0]) }}">
+                        <section class="roundedBox eventBox">
+                            <!--
+                                Integrates style attribute to grab background_image, Does not cause error
+                                Don't worry about the red stuff if it really bothers you it can probably be better done using js
+                            -->
+                            <h1 class="eventTitle" style="background-image: url('{{ url_for('static', filename='images/' ~ event[7]) }}');">
+                              <span class="eventDimmer">{{ event[1] }}</span>
+                            </h1>
+                            
+                            <section class="eventInfo">
+                                <p><b>Date: </b>{{ event[2] }}</p>
+                                <p><b>Time and Location: </b>{{ event[3] }}-{{ event[4] }} @ {{ event[5] }}</p>
+                                <p><b>Contact:</b> {{ event[8]}} {{event[9] }} - <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ event[6] }}" target="_blank" class="emailLink">{{ event[6] }}</a></p>
+                            </section>
+                        </section>
+                    </a>
+
+                {% endfor %}
+            </section>
+        </section>
+
+        <div id="addEventInput">
+            <section id="addEventInputHeader">
+                <h3 id="addEventHeader">Add Event</h3>
+                <img src="{{ url_for('static', filename='images/CloseButton.png') }}" id="closeAddEvent">
+            </section>
+            <section>
+                <form method="POST" action="{{ url_for('add_event') }}" enctype="multipart/form-data" class="eventForm" id="addEventForm">
+                
+                    <label for="eventName">Event Name:</label>
+                    <input type="text" name="event_name" id="eventName" required>
+                    <br>
+                    <label for="eventDate">Date:</label>
+                    <input type="date" name="event_date" id="eventDate" required>
+                    <br>
+                    <label for="startTime">Start Time:</label>
+                    <input type="text" name="start_time" id="startTime" required>
+                    <br>
+                    <label for="endTime">End Time:</label>
+                    <input type="text" name="end_time" id="endTime" required>
+                    <br>
+                    <label for="location">Location:</label>
+                    <input type="text" name="location" id="location" required>
+                    <br>
+                    <label for="contactEmail">Contact Email:</label>
+                    <input type="email" name="contact_email" id="contactEmail" required>
+                    <br>
+                    <label for="backgroundImage">Background Image:</label>
+                    <input type="file" name="background_image" id="backgroundImage" accept="image/*">
+
+                    <br>
+                    <button type="submit">Create Event</button>
+                </form>
+                
+                
+            </section>
+        </div>
+
+        <section id="footer">
+
+        </section>
+        </section>
+
+        <div class="binary-container"></div>
+
+        </div>
+
+{% endblock %}
