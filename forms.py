@@ -9,6 +9,7 @@ class RegisterForm(FlaskForm):
     last_name = StringField('LastName', validators = [DataRequired()])
     grade = SelectField('Grade', choices=[('8', '8'),('9', '9'), ('10', '10'), ('11', '11'), ('12', '12')], coerce=int)
     password = PasswordField('Password', validators = [DataRequired()])
+    confirmPassword = PasswordField('Confirm Password', validators=[DataRequired()])
     is_admin = BooleanField(default=False)
     submit = SubmitField('Register')
 
