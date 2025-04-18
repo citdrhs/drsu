@@ -90,8 +90,12 @@ def create_app():
                 except Exception as e:
                     print(e)
                     flash("An error occurred while trying to log in. Please try again.", "danger")
+            else:
+                
+                print(form.errors)
+        else:
+            print("nopost")
 
-        
         return render_template("login.html", form=form)
     
     #Route below is for testing on the server, Switch commenting when not testing on server
