@@ -77,9 +77,7 @@ def create_app():
         msg.html = html
         print("sending")
         mail.send(msg)
-    
-    @app.route('/drsu/confirm/<token>/')
-    #@app.route('/confirm/<token>')
+    @app.route('/confirm/<token>')
     def confirm_email(token):
         print("entered confirm email")
         email = confirm_token(token)
@@ -129,12 +127,11 @@ def create_app():
         day = date_obj.day
         suffix = 'th' if 11 <= day <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
         return date_obj.strftime(f"%A, %B {day}{suffix}, %Y")
-
     
     #Admin Code update for login
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/", methods=['GET', 'POST'])
-    #@app.route("/", methods=['GET', 'POST'])
+    #@app.route("/drsu", methods=['GET', 'POST'])
+    @app.route("/", methods=['GET', 'POST'])
     def index():
         form = LoginForm()
         print("before validate event")
@@ -183,15 +180,15 @@ def create_app():
         return render_template("login.html", form=form)
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/logout/", methods=['GET', 'POST'])
-    #@app.route("/logout", methods=['GET', 'POST'])
+    #@app.route("/drsu/logout", methods=['GET', 'POST'])
+    @app.route("/logout", methods=['GET', 'POST'])
     def logout():
         session.clear()
         return redirect(url_for('index'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/register/", methods=['GET', 'POST'])
-    #@app.route("/register", methods=['GET', 'POST'])
+    #@app.route("/drsu/register", methods=['GET', 'POST'])
+    @app.route("/register", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
 
@@ -246,15 +243,18 @@ def create_app():
 
     #Display home page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/homePage/")
-    #@app.route("/homePage")
+    #@app.route("/drsu/homePage")
+    @app.route("/homePage")
     def homePage():
+        if 'email' not in session:
+            return redirect(url_for('index'))
+
         is_admin = session.get('is_admin', False)
 
         #Connect to database
         conn = get_db_connection()
         cur = conn.cursor()
-        
+
         #Grabs list of events to display in event menu on home page
         cur.execute('SELECT t1.*,t2.first_name,t2.last_name FROM events AS t1 JOIN public.user AS t2 ON t2.email=t1.contact;')
         events = cur.fetchall()
@@ -280,7 +280,8 @@ def create_app():
                 event[7],   # Background image filename
                 event[8],
                 event[9],
-                event[10]
+                event[10],
+                event[2]
             )
             formatted_dates.append(updated_event)
         #Print statement for TESTING
@@ -295,11 +296,11 @@ def create_app():
 
         return render_template("index.html", events = formatted_dates, admin = is_admin, email = session.get('email'))
     
-
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_event/", methods=['POST'])
-    #@app.route("/add_event", methods=['POST'])
+    #@app.route("/drsu/add_event", methods=['POST'])
+    @app.route("/add_event", methods=['POST'])
     def add_event():
+        event_id = request.form.get('event_id')
         event_name = request.form['event_name']
         event_date = request.form['event_date']
         start_time = request.form['start_time']
@@ -308,21 +309,43 @@ def create_app():
         contact_email = request.form['contact_email']
         event_note = request.form['note']
 
-        background_file = request.files['background_image']
-        filename = secure_filename(background_file.filename)
+        background_file = request.files.get('background_image')
+        filename = None
 
-        basedir = os.path.dirname(__file__)
-        image_folder = os.path.join(basedir, 'static', 'images')
-        background_file.save(os.path.join(image_folder, filename))
+        if background_file and background_file.filename:
+            filename = secure_filename(background_file.filename)
+            basedir = os.path.dirname(__file__)
+            image_folder = os.path.join(basedir, 'static', 'images')
+            background_file.save(os.path.join(image_folder, filename))
 
         try:
             conn = get_db_connection()
             cur = conn.cursor()
 
-            cur.execute("""
-                INSERT INTO events (name, date, start_time, end_time, location, contact, file_name, event_note)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (event_name, event_date, start_time, end_time, location, contact_email, filename, event_note))
+            if event_id:
+                # Update event
+                if filename: # if there is a background
+                    cur.execute("""
+                        UPDATE events
+                        SET name=%s, date=%s, start_time=%s, end_time=%s, location=%s,
+                            contact=%s, file_name=%s, event_note=%s
+                        WHERE id=%s
+                    """, (event_name, event_date, start_time, end_time, location,
+                        contact_email, filename, event_note, event_id))
+                else: # edit without background
+                    cur.execute("""
+                        UPDATE events
+                        SET name=%s, date=%s, start_time=%s, end_time=%s, location=%s,
+                            contact=%s, event_note=%s
+                        WHERE id=%s
+                    """, (event_name, event_date, start_time, end_time, location,
+                        contact_email, event_note, event_id))
+            else:
+                # Add new event if event doesnt already exist
+                cur.execute("""
+                    INSERT INTO events (name, date, start_time, end_time, location, contact, file_name, event_note)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (event_name, event_date, start_time, end_time, location, contact_email, filename, event_note))
 
             conn.commit()
             cur.close()
@@ -333,21 +356,24 @@ def create_app():
 
         return redirect(url_for('homePage'))
 
-
-
-
     #Display calendar page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/calendar/")
-    #@app.route("/calendar")
+    #@app.route("/drsu/calendar")
+    @app.route("/calendar")
     def calendar():
+        if 'email' not in session:
+            return redirect(url_for('index'))
+
         return render_template("calendar.html")
     
     #Display event signup (based on id in SQL events table)
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/signup/<int:event_id>/")
-    #@app.route("/viewEvent/<int:event_id>")
+    #@app.route("/drsu/viewEvent/<int:event_id>")
+    @app.route("/viewEvent/<int:event_id>")
     def viewEvent(event_id):
+        if 'email' not in session:
+            return redirect(url_for('index'))
+
         is_admin = session.get('is_admin', False)
 
         session_email = session.get('email')
@@ -445,8 +471,8 @@ def create_app():
         )
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/signup/<int:table_id>/', methods=['POST'])
-    #@app.route('/signup/<int:table_id>', methods=['POST'])
+    #@app.route('/drsu/signup/<int:table_id>', methods=['POST'])
+    @app.route('/signup/<int:table_id>', methods=['POST'])
     def signup(table_id):
         print("entered")
         #Email taken from the current user's email 
@@ -482,13 +508,47 @@ def create_app():
         conn.commit()
         cur.close()
         conn.close()
-        
+        flash("Signup confirmed!", "success")
         return redirect(url_for('viewEvent', event_id = eventID))
 
+    #uses different function because signup id is needed not tbale id
+    #@app.route('/drsu/edit_signup/<int:table_id>', methods=['POST'])
+    @app.route('/edit_signup/<int:id>', methods=['POST'])
+    def edit_signup(id):
+        print("entered edit signup")
+        email = session.get('email')
+        dish = request.form['dish']
+        comment = request.form.get('extras', '')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute('SELECT table_id FROM event_signups WHERE id = %s', (id,))
+        table_id = cur.fetchone()[0]
+
+        cur.execute('SELECT event_id FROM event_tables WHERE id = %s', (table_id,))
+        event_id = cur.fetchone()[0]
+
+        if profanity.contains_profanity(dish) or profanity.contains_profanity(comment):
+            flash("Profanity is not allowed in the signup. Please remove inappropriate language.", "danger")
+            return redirect(url_for('viewEvent', event_id=event_id))
+
+        cur.execute('''
+            UPDATE event_signups
+            SET item_name = %s, comment = %s
+            WHERE id = %s AND responsible_email = %s
+        ''', (dish, comment, id, email))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        flash("Signup updated successfully!", "success")
+        return redirect(url_for('viewEvent', event_id=event_id))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/delete_signup/<int:id>/')
-    #@app.route('/delete_signup/<int:id>/')
+    #@app.route('/drsu/delete_signup/<int:id>/')
+    @app.route('/delete_signup/<int:id>/')
     def delete_signup(id):
 
         print("delete signup")
@@ -510,8 +570,8 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/delete_table/<int:id>/')
-    #@app.route('/delete_table/<int:id>/')
+    #@app.route('/drsu/delete_table/<int:id>/')
+    @app.route('/delete_table/<int:id>/')
     def delete_table(id):
 
         #Connect to database
@@ -531,24 +591,32 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_table/<int:event_id>/", methods=['POST'])
-    #@app.route("/add_table/<int:event_id>", methods=['POST'])
+    #@app.route("/drsu/add_table/<int:event_id>", methods=['POST'])
+    @app.route("/add_table/<int:event_id>", methods=['POST'])
     def add_table(event_id):
-        print("entered add table")
         category = request.form['category']
         max_entries = request.form['max_entries']
         vieworder = request.form['vieworder']
+        table_id = request.form.get('table_id')
 
         try:
-            print("entered try")
             conn = get_db_connection()
             cur = conn.cursor()
-            cur.execute("""
-                INSERT INTO event_tables (event_id, table_name, maxentries,vieworder)
-                VALUES (%s, %s, %s, %s)
-            """, (event_id, category, max_entries,vieworder,))
 
-            #Commit changes to database and close database connection
+            if table_id:
+                # Update existing table
+                cur.execute("""
+                    UPDATE event_tables
+                    SET table_name = %s, maxentries = %s, vieworder = %s
+                    WHERE id = %s
+                """, (category, max_entries, vieworder, table_id))
+            else:
+                # Add new table
+                cur.execute("""
+                    INSERT INTO event_tables (event_id, table_name, maxentries, vieworder)
+                    VALUES (%s, %s, %s, %s)
+                """, (event_id, category, max_entries, vieworder))
+
             conn.commit()
             cur.close()
             conn.close()
@@ -556,7 +624,8 @@ def create_app():
         except Exception as e:
             print("Database error:", e)
 
-        return redirect(url_for('viewEvent', event_id = event_id))
+        return redirect(url_for('viewEvent', event_id=event_id))
+
     
     return app
 
