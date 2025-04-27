@@ -10,12 +10,95 @@ from dotenv import load_dotenv
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import flash
+from better_profanity import profanity
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
+
+
+#==================================================================================================================================================================#
+#                                                                                                                                                                  #
+#Project: CIT Signups                                                                                                                                              #
+#Contact: Lynne Norris (lmnorris@henrico.k12.va.us)                                                                                                                #
+#                                                                                                                                                                  #
+#Deep Run High School Restricted                                                                                                                                   #
+#                                                                                                                                                                  #
+#DO NOT MODIFY                                                                                                                                                     #
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#@brief Has Flask frontend/backend integration                                                                                                                     #
+#                                                                                                                                                                  #
+#@author Omkar Deshmukh | (hcps-deshmukop@henricostudents.org), Jack Gardner | (hcps-gardnejk1@henricostudents.org), Zachary Lin | (hcps-linzc@henricostudents.org)#                                                 
+#                                                                                                                                                                  #
+#@version 1.0                                                                                                                                                      #
+#                                                                                                                                                                  #
+#@date Date_Of_Creation 2/2/25                                                                                                                                     #
+#                                                                                                                                                                  #
+#@date Last_Modification 4/17/25                                                                                                                                   #
+#                                                                                                                                                                  #
+#==================================================================================================================================================================#
+
 
 # Load variables from .env
 load_dotenv()
+profanity.load_censor_words()
 
 def create_app():
     app = Flask(__name__)
+
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Or another SMTP server
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
+    mail = Mail(app)
+
+    def generate_confirmation_token(email):
+        print("entered generate token")
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        return serializer.dumps(email, salt='email-confirm-salt')
+
+    def confirm_token(token, expiration=3600):
+        print("entered confirm token")
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        try:
+            email = serializer.loads(token, salt='email-confirm-salt', max_age=expiration)
+        except:
+            return False
+        return email
+    def send_confirmation_email(user_email):
+        print("entered send email")
+        token = generate_confirmation_token(user_email)
+        print("1")
+        confirm_url = url_for('confirm_email', token=token, _external=True)
+        print("2")
+        html = render_template('confirm_email.html', confirm_url=confirm_url)
+        print("3")
+        msg = Message("Confirm Your Registration", sender=app.config['MAIL_USERNAME'], recipients=[user_email])
+        print("4")
+        msg.html = html
+        print("sending")
+        mail.send(msg)
+    @app.route('/confirm/<token>')
+    def confirm_email(token):
+        print("entered confirm email")
+        email = confirm_token(token)
+        if not email:
+            flash("The confirmation link is invalid or has expired.", "danger")
+            return redirect(url_for('register'))
+
+        pending_user = session.get('pending_user')
+        if not pending_user or pending_user['email'] != email:
+            flash("No matching pending registration found.", "danger")
+            return redirect(url_for('register'))
+
+        new_user = User(**pending_user)
+        db.session.add(new_user)
+        db.session.commit()
+        session.pop('pending_user', None)
+
+        flash("Registration confirmed! You can now log in.", "success")
+        return redirect(url_for('index'))
+
+
     
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
@@ -48,8 +131,8 @@ def create_app():
     
     #Admin Code update for login
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/", methods=['GET', 'POST'])
-    #@app.route("/", methods=['GET', 'POST'])
+    #@app.route("/drsu", methods=['GET', 'POST'])
+    @app.route("/", methods=['GET', 'POST'])
     def index():
         form = LoginForm()
         print("before validate event")
@@ -66,9 +149,12 @@ def create_app():
 
                             
                             if form.adminCode.data:
+                                print("entered if")
                                 try:
+                                    print("Entered try")
                                     admin_code = int(form.adminCode.data)
-                                    if admin_code == int(os.getenv('ADMIN_CODE')):
+                                    
+                                    if admin_code == int(os.environ.get('ADMIN_CODE')):
                                         print("You are an admin!")
                                         user.is_admin = True
                                         db.session.commit()
@@ -90,30 +176,29 @@ def create_app():
                 except Exception as e:
                     print(e)
                     flash("An error occurred while trying to log in. Please try again.", "danger")
-            else:
-                
-                print(form.errors)
-        else:
-            print("nopost")
 
+        
         return render_template("login.html", form=form)
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/logout/", methods=['GET', 'POST'])
-    #@app.route("/logout", methods=['GET', 'POST'])
+    #@app.route("/drsu/logout", methods=['GET', 'POST'])
+    @app.route("/logout", methods=['GET', 'POST'])
     def logout():
         session.clear()
         return redirect(url_for('index'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/register/", methods=['GET', 'POST'])
-    #@app.route("/register", methods=['GET', 'POST'])
+    #@app.route("/drsu/register", methods=['GET', 'POST'])
+    @app.route("/register", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
 
         if request.method == 'POST':
             if form.validate_on_submit:
                 existing_user = User.query.filter_by(email=form.email.data).first()
+                if profanity.contains_profanity(form.first_name.data) or profanity.contains_profanity(form.last_name.data):
+                    flash("No use of profanity allowed.", "danger")
+                    return redirect(url_for('register'))
                 if existing_user:
                     flash("Email is already in use. Please choose a different one.", "danger")
                     return redirect(url_for('register'))
@@ -139,11 +224,17 @@ def create_app():
                 )
 
                 try:
-                    db.session.add(user)
-                    db.session.commit()
-                    flash("You have been successfully registered!", "success")
+                    session['pending_user'] = {
+                        "email": form.email.data,
+                        "first_name": form.first_name.data,
+                        "last_name": form.last_name.data,
+                        "password": bcrypt.generate_password_hash(form.password.data).decode('utf-8'),
+                        "grade": form.grade.data,
+                        "is_admin": form.is_admin.data
+                    }
+                    send_confirmation_email(form.email.data)
+                    flash("A confirmation email has been sent. Please check your inbox.", "info")
                     return redirect(url_for('index'))
-
                 except Exception as e:
                     db.session.rollback()
                     #flash(f"An error occurred: {e}", "danger")
@@ -153,8 +244,8 @@ def create_app():
 
     #Display home page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/homePage/")
-    #@app.route("/homePage")
+    #@app.route("/drsu/homePage")
+    @app.route("/homePage")
     def homePage():
         is_admin = session.get('is_admin', False)
 
@@ -166,6 +257,7 @@ def create_app():
         cur.execute('SELECT t1.*,t2.first_name,t2.last_name FROM events AS t1 JOIN public.user AS t2 ON t2.email=t1.contact;')
         events = cur.fetchall()
         #Print statement for TESTING
+        print("These are the events")
         print(events)
 
         #List of events with formatted dates
@@ -185,7 +277,8 @@ def create_app():
                 event[6],  # Email
                 event[7],   # Background image filename
                 event[8],
-                event[9]
+                event[9],
+                event[10]
             )
             formatted_dates.append(updated_event)
         #Print statement for TESTING
@@ -197,13 +290,13 @@ def create_app():
         #    adminStatus = True
         
         #Passes in list of events (with formatted dates) and admin status to home page
+
         return render_template("index.html", events = formatted_dates, admin = is_admin, email = session.get('email'))
     
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_event/", methods=['POST'])
-    #@app.route("/add_event", methods=['POST'])
-    
+    #@app.route("/drsu/add_event", methods=['POST'])
+    @app.route("/add_event", methods=['POST'])
     def add_event():
         event_name = request.form['event_name']
         event_date = request.form['event_date']
@@ -211,6 +304,7 @@ def create_app():
         end_time = request.form['end_time']
         location = request.form['location']
         contact_email = request.form['contact_email']
+        event_note = request.form['note']
 
         background_file = request.files['background_image']
         filename = secure_filename(background_file.filename)
@@ -224,9 +318,9 @@ def create_app():
             cur = conn.cursor()
 
             cur.execute("""
-                INSERT INTO events (name, date, start_time, end_time, location, contact, file_name)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (event_name, event_date, start_time, end_time, location, contact_email, filename))
+                INSERT INTO events (name, date, start_time, end_time, location, contact, file_name, event_note)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (event_name, event_date, start_time, end_time, location, contact_email, filename, event_note))
 
             conn.commit()
             cur.close()
@@ -242,15 +336,15 @@ def create_app():
 
     #Display calendar page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/calendar/")
-    #@app.route("/calendar")
+    #@app.route("/drsu/calendar")
+    @app.route("/calendar")
     def calendar():
         return render_template("calendar.html")
     
     #Display event signup (based on id in SQL events table)
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/signup/<int:event_id>")
-    #@app.route("/signup/<int:event_id>")
+    #@app.route("/drsu/signup/<int:event_id>")
+    @app.route("/viewEvent/<int:event_id>")
     def viewEvent(event_id):
         is_admin = session.get('is_admin', False)
 
@@ -283,7 +377,8 @@ def create_app():
             event_data[0][4],  # End Times
             event_data[0][5],  # Location
             event_data[0][6],  # Email
-            event_data[0][7]   # Background image filename
+            event_data[0][7],   # Background image filename
+            event_data[0][8]   # Note to users
         )
         #Print statement for TESTING
         print(updated_event)
@@ -302,6 +397,9 @@ def create_app():
 
             cur.execute('SELECT * FROM event_signups WHERE table_id = %s', (table_id,))
             data = cur.fetchall()
+            print("table id:")
+            print(table_id)
+            print(data)
 
             signup_dict[category] = data
             max_entries_dict[category] = max_entries
@@ -345,9 +443,10 @@ def create_app():
         )
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/signup/<int:table_id>/', methods=['POST'])
-    #@app.route('/signup/<int:table_id>', methods=['POST'])
+    #@app.route('/drsu/signup/<int:table_id>', methods=['POST'])
+    @app.route('/signup/<int:table_id>', methods=['POST'])
     def signup(table_id):
+        print("entered")
         #Email taken from the current user's email 
         email = session.get('email')
         
@@ -364,6 +463,10 @@ def create_app():
         eventID = cur.fetchall()[0][0]
         print("EventID right here")
         print(eventID)
+        
+        if profanity.contains_profanity(dish) or profanity.contains_profanity(comment):
+            flash("Profanity is not allowed in the signup. Please remove inappropriate language.", "danger")
+            return redirect(url_for('viewEvent', event_id=eventID))
 
         cur.execute('SELECT first_name, last_name FROM public.user WHERE email = %s', (email,))
         #Data is in within a tuple inside a list: [(first_name, last_name)]
@@ -372,7 +475,7 @@ def create_app():
         person = nameData[0][0] + ' ' + nameData[0][1]
 
         cur.execute('INSERT INTO event_signups (table_id, responsible_name, item_name, responsible_email, comment) VALUES (%s, %s, %s, %s, %s)', (table_id, person, dish, email, comment))
-
+        print("Succesfully added")
         #Commit changes to database and close database connection
         conn.commit()
         cur.close()
@@ -382,8 +485,8 @@ def create_app():
 
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/delete_signup/<int:id>/')
-    #@app.route('/delete_signup/<int:id>/')
+    #@app.route('/drsu/delete_signup/<int:id>/')
+    @app.route('/delete_signup/<int:id>/')
     def delete_signup(id):
 
         print("delete signup")
@@ -391,7 +494,7 @@ def create_app():
         #Connect to database
         conn = get_db_connection()
         cur = conn.cursor()
-    
+
         cur.execute('SELECT t1.event_id FROM event_tables as t1 Join event_signups as t2 On t1.id=t2.table_id WHERE t2.id = %s', (id,))
         #Data is in within a tuple inside a list: [(id)] so cur.fetchall()[0][0] is needed to grab the actual number
         eventID = cur.fetchall()[0][0]
@@ -405,8 +508,8 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route('/drsu/delete_table/<int:id>/')
-    #@app.route('/delete_table/<int:id>/')
+    #@app.route('/drsu/delete_table/<int:id>/')
+    @app.route('/delete_table/<int:id>/')
     def delete_table(id):
 
         #Connect to database
@@ -426,8 +529,8 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    @app.route("/drsu/add_table/<int:event_id>/", methods=['POST'])
-    #@app.route("/add_table/<int:event_id>", methods=['POST'])
+    #@app.route("/drsu/add_table/<int:event_id>", methods=['POST'])
+    @app.route("/add_table/<int:event_id>", methods=['POST'])
     def add_table(event_id):
         print("entered add table")
         category = request.form['category']
