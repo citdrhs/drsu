@@ -82,7 +82,7 @@ def create_app():
         print("sending")
         mail.send(msg)
     
-    @app.route('/drsu/confirm/<token>/')
+    @app.route('/confirm/<token>/')
     #@app.route('/confirm/<token>')
     def confirm_email(token):
         print("entered confirm email")
@@ -141,7 +141,7 @@ def create_app():
 
     #Admin Code update for login
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/", methods=['GET', 'POST'])
+    #@app.route("/", methods=['GET', 'POST'])
     @app.route("/", methods=['GET', 'POST'])
     def index():
         form = LoginForm()
@@ -192,14 +192,14 @@ def create_app():
         return render_template("login.html", form=form)
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/logout/", methods=['GET', 'POST'])
+    #@app.route("/logout/", methods=['GET', 'POST'])
     @app.route("/logout", methods=['GET', 'POST'])
     def logout():
         session.clear()
         return redirect(url_for('index'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/register/", methods=['GET', 'POST'])
+    #@app.route("/register/", methods=['GET', 'POST'])
     @app.route("/register", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
@@ -255,7 +255,7 @@ def create_app():
 
     #Display home page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/homePage/")
+    #@app.route("/homePage/")
     @app.route("/homePage")
     def homePage():
         if 'email' not in session:
@@ -309,7 +309,7 @@ def create_app():
         return render_template("index.html", events = formatted_dates, admin = is_admin, email = session.get('email'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/add_event/", methods=['POST'])
+    #@app.route("/add_event/", methods=['POST'])
     @app.route("/add_event", methods=['POST'])
     def add_event():
         event_id = request.form.get('event_id')
@@ -370,7 +370,7 @@ def create_app():
 
     #Display calendar page
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/calendar/")
+    #@app.route("/calendar/")
     @app.route("/calendar")
     def calendar():
         if 'email' not in session:
@@ -380,7 +380,7 @@ def create_app():
     
     #Display event signup (based on id in SQL events table)
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/viewEvent/<int:event_id>/")
+    #@app.route("/viewEvent/<int:event_id>/")
     @app.route("/viewEvent/<int:event_id>")
     def viewEvent(event_id):
         if 'email' not in session:
@@ -483,7 +483,7 @@ def create_app():
         )
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route('/drsu/signup/<int:table_id>/', methods=['POST'])
+    #@app.route('/signup/<int:table_id>/', methods=['POST'])
     @app.route('/signup/<int:table_id>', methods=['POST'])
     def signup(table_id):
         print("entered")
@@ -524,7 +524,7 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #uses different function because signup id is needed not tbale id
-    #@app.route('/drsu/edit_signup/<int:table_id>/', methods=['POST'])
+    #@app.route('/edit_signup/<int:table_id>/', methods=['POST'])
     @app.route('/edit_signup/<int:id>', methods=['POST'])
     def edit_signup(id):
         print("entered edit signup")
@@ -559,7 +559,7 @@ def create_app():
         return redirect(url_for('viewEvent', event_id=event_id))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route('/drsu/delete_signup/<int:id>/')
+    #@app.route('/delete_signup/<int:id>/')
     @app.route('/delete_signup/<int:id>/')
     def delete_signup(id):
 
@@ -582,7 +582,7 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route('/drsu/delete_table/<int:id>/')
+    #@app.route('/delete_table/<int:id>/')
     @app.route('/delete_table/<int:id>/')
     def delete_table(id):
 
@@ -603,7 +603,7 @@ def create_app():
         return redirect(url_for('viewEvent', event_id = eventID))
 
     #Route below is for testing on the server, Switch commenting when not testing on server
-    #@app.route("/drsu/add_table/<int:event_id>/", methods=['POST'])
+    #@app.route("/add_table/<int:event_id>/", methods=['POST'])
     @app.route("/add_table/<int:event_id>", methods=['POST'])
     def add_table(event_id):
         category = request.form['category']
