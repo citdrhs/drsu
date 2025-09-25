@@ -154,7 +154,7 @@ document.querySelectorAll(".signUpButton").forEach(button => {
     button.addEventListener("click", () => {
         const tableId = button.dataset.tableId;
         
-        form.action = `/signup/${tableId}`; // set to signup route
+        form.action = `/drsu/signup/${tableId}`; // set to signup route
         tableIdInput.value = tableId;
         signupIdInput.value = "";
 
