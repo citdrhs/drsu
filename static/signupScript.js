@@ -172,7 +172,7 @@ document.querySelectorAll(".edit-signup-button").forEach(button => {
         const dish = button.dataset.dish || "";
         const comment = button.dataset.comment || "";
 
-        form.action = `/edit_signup/${signupId}`; // set to edit route
+        form.action = `/drsu/edit_signup/${signupId}`; // set to edit route
         signupIdInput.value = signupId;
         dishInput.value = dish;
         extrasInput.value = comment;
