@@ -200,7 +200,7 @@ def create_app():
     
     #Route below is for testing on the server, Switch commenting when not testing on server
     #@app.route("/register/", methods=['GET', 'POST'])
-    @app.route("/drsu/register", methods=['GET', 'POST'])
+    @app.route("/register", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
 
