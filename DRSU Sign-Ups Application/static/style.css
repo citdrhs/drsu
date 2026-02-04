@@ -1,0 +1,373 @@
+/*General styling START*/
+
+body{
+    margin: 0px;
+    background-color: rgb(234,234,234);
+    font-family: 'Lucida Bright', 'Times New Roman';
+    font-size: 1.4vw;
+    margin: 0;
+}
+
+/*Header*/
+
+
+#headerSection{
+    display: flex;
+    position: relative;
+    margin: 0px;
+    padding: 0px; 
+    width: 100%;
+    height: 7%;
+    top:0%;
+    left: 0%;
+    z-index: 5;
+
+
+    /*Vertically centers header items*/
+    align-items: center;
+
+
+    /*Old header styling*/
+    /*background-image: linear-gradient(to bottom right, rgb(57,117,166), rgb(4,42,77));*/
+    background-image: linear-gradient(to right, rgb(30, 109, 173), rgb(0, 61, 117));
+}
+
+
+.headerItem {
+    color: white;
+    font-size: 180%;
+    font-weight: bold;
+}
+
+
+/*Styling for header items that link to other pages*/
+a.headerLink {
+    text-decoration: none;
+    color: white;
+}
+
+
+/*Color darkens when hovered over*/
+a.headerLink:hover {
+    color: rgb(207, 207, 207);
+}
+
+section a {
+    text-decoration: none;
+    color: black;
+}
+
+.textLink {
+    color: blue;
+    text-decoration: underline;
+}
+
+
+#signinText:hover {
+    color: rgb(207, 207, 207);
+}
+
+#homePage{
+    display: flex;
+    margin: 0px;
+    transition: transform 0.3s ease-in-out;
+    transform-origin: left;
+    cursor: pointer;
+    top: 0%;
+    width: 27%;
+    height: 100%;
+}
+
+/*Logo expands when hovered over*/
+#homePage:hover {
+    transform: scale(1.05);
+}
+
+#CITLogo{
+    position: relative;
+    left: 3%;
+    height:20%;
+    width: 18%;
+    margin: 1%;
+}
+
+#CITSignups{
+    position: relative;
+    left: 5%;
+    font-weight:bolder;
+    margin: 0px;
+    margin-top: 1.7%;
+    font-size: 3.5vw;
+    color: white;
+    text-shadow: 3.5px 5px rgb(107,112,180), 7px 10px rgb(56, 60, 128);
+}
+
+#calendarText {
+    /*Pushes "Calendar" and "Sign in" to the far right*/
+    position: relative;
+    left: 40%;
+    margin: 1.5%;
+}
+
+
+#signinText {
+    position: relative;
+    bottom: 18%;
+    margin-left: 5%;
+    margin-right: 5%;
+    overflow: hidden;
+}
+
+#bodySection {
+    position: relative;
+    width: 80%;
+    margin-left: 10%;
+    margin-top: 1%;
+}
+
+.roundedBox {
+    background-color: white;
+    border-radius: 40px;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    margin-bottom: 2%;
+    transition: transform 0.3s ease-in-out;
+}
+
+/*Rounded boxes expand when hovered over*/
+.eventBox:hover {
+    transform: scale(1.05);
+}
+
+.big-button {
+    background-color: #f0f0f0;
+    padding: 1%;
+    border-radius: 5px;
+    font-size: 1.1vw;
+}
+
+#optionBarTrigger{
+    position: absolute;
+    margin: 0px;
+    right: 0%;
+    top:0.5%;
+    height: 13%;
+    width: 17.9%;    
+    /*background-color: rgba(0, 225, 255, 0.377);*/
+    z-index: 5;
+    cursor: pointer;
+    text-align: center;
+}
+
+#optionBarTrigger:hover ~ #dropdown,
+#dropdown:hover {
+    top: 13%;
+}
+
+#dropdown{
+    position: absolute;
+    z-index: 4;
+    right: 0%;
+    top: -5%;
+    width: 16.5%;
+    transition: top 0.3s ease-in-out;
+}
+
+#dropdown p{
+    background-color: rgb(202, 202, 202);
+    margin: 0px;
+    text-align: center;
+    padding: 5%;
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 2px black;
+}
+
+#dropdown p:hover{
+    background-color: rgb(180, 180, 180);
+    cursor:pointer;
+}
+
+#logOut{
+    border-bottom-left-radius: 30px;
+}
+
+
+
+/*General styling END*/
+
+
+/*Home page styling*/
+
+#welcome {
+    background-image: url("./images/TechBG.jpg"), url("./images/TechBGReverse.jpg");
+    background-position: left, right;
+    background-repeat: no-repeat;
+    background-color: rgb(1,12,27);
+    color: white;
+    overflow: hidden;
+    font-size: 1.6vw;
+    text-align: center;
+}
+
+#calendarIcon {
+    height: 5%;
+    width: 5%;
+    margin-left: auto;
+}
+
+#expectations {
+    padding-left: 2.5%
+}
+
+/*Events*/
+
+
+#events{
+    position: relative;
+    /*Does not expand when hover*/
+    transform: none;
+    text-align: center;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+#eventsMenu {
+    display: flex;
+    justify-content: center;
+}
+
+
+.roundedSquare {
+    border-radius: 40px;
+    width: 25%;
+    text-align: center;
+    margin-bottom: 2%;
+
+    padding-top: 7%;
+    padding-bottom: 7%;
+
+    transition: transform 0.3s ease-in-out;
+}
+
+.roundedSquare:hover {
+    transform: scale(1.05);
+}
+
+.eventBox{
+    position: relative;
+    padding: 0px;
+    border: 5px solid black;
+    overflow: hidden;
+    color: black;
+}
+
+.eventTitle{
+    background-size: cover;
+    margin-top: 0px;
+    padding: 3%;
+    color: white;
+    font-size: 3vw;
+    font-weight: bold;
+    margin: 0px;
+    text-shadow: 
+        -2px -2px 2px black,
+        2px -2px 2px black,
+        -2px  2px 2px black,
+        2px  2px 2px black,
+        -2px  2px 2px black,
+        2px  2px 2px black,
+        2px -2px 2px black,
+        2px  2px 2px black;
+    color: white; /* Ensure text remains readable */
+}
+.eventInfo{
+    position: relative;
+    padding-bottom: 1%;
+}
+
+.eventDimmer{
+    background-color: rbga(0,0,0,50);
+}
+
+/* TESTING 
+#WinterGathering {
+    position: relative;
+    background-image: url("./ThanksgivingBG.jpg");
+    background-size: 100% 100%;
+    color: black;
+}
+*/    
+
+.binary-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* Prevents interference with clicks */
+    z-index: -1; /* Keeps it in the background */
+}
+
+.binary {
+    position: absolute;
+    /*color: rgb(46, 222, 46);*/
+    color: rgb(0, 96, 206);
+    font-family: monospace;
+    font-size: 2vw;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-5%);
+    }
+    to {
+        transform: translateY(105vh);
+    }
+}
+
+#addEventInput{
+    display: none;
+    z-index: 6;
+    background-color: white;
+    position: fixed;
+    width: 60%;
+    height: 55%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-radius: 40px;
+    border: 5px solid black;
+    overflow: hidden;
+    color: black;
+}
+#addEventInputHeader{
+    background-color: rgb(30, 109, 173);
+    width: 100%;
+    margin: 0px;
+    padding: 0.002%;
+    border-radius: 30px;
+    margin-bottom: 1%;
+}
+#addEventHeader{
+    margin: 2%;
+    font-size: 2.5vw;
+    color:white;
+}
+#closeAddEvent{
+    position: absolute;
+    top: 4%;
+    right: 2%;
+    height:15%;
+    transition: transform 0.3s ease-in-out;
+}
+
+#closeAddEvent:hover{
+    cursor: pointer;
+    transform: scale(1.10);
+}

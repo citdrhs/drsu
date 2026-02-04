@@ -1,0 +1,116 @@
+
+/*body {
+    font-family: Times New Roman, serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+*/
+
+
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 80vw;
+    max-width: 100%;
+    margin: auto;
+    padding: 10px;
+}
+.calendar {
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2vw;
+    width: 120vw;
+    max-width: 100%;
+    height: 170vh;
+    max-height: 100%;
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.8rem; 
+}
+.calendar-header button {
+    background-color: #000080;
+    color: white;
+    border: solid navy;
+    padding: 10px 15px; 
+    cursor: pointer;
+}
+.calendar-header button:hover {
+    background-color: #000080;
+}
+.days-of-week, .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    gap: 1vw;
+}
+.day {
+    padding: 10px;
+    cursor: pointer;
+}
+/* .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 5vw;
+}
+    */
+.day-cell {
+    width: 9vw; 
+    height: 9vw; 
+    border: solid navy;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #f4f4f4;
+    cursor: pointer;
+    font-size: 1.4rem; 
+    padding: 0.5vw;
+    text-align: left;
+    position: relative;
+    
+}
+.day-cell:hover {
+    background-color: #ddd;
+}
+.current-day {
+    background-color: #00008025; 
+    color: rgb(0, 0, 0);
+}
+
+.event-box {
+    background-color: rgba(0, 0, 128, 0.8);
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.3vw;
+    margin-top: 0.5vw;
+    border-radius: 0.8vw;
+    text-align: left;
+    width: 90%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    min-height: 1.5em;
+    max-height: 6em;
+    text-overflow: ellipsis;
+}
+
+
+/*h1{
+    font-size: 40px;
+}*/
