@@ -126,7 +126,7 @@ section a {
     font-weight:bolder;
     margin: 0px;
     margin-top: 1.7%;
-    font-size: 4vw;
+    font-size: 3.7vw;
     color: white;
 }
 
@@ -691,8 +691,8 @@ section a {
 
 @media (max-width: 1600px) {
     .headerItem {
-        font-size: 110%;
-        padding: 7px 12px;
+        font-size: 115%;
+        padding: 8px 14px;
     }
 
     #navLinks {
@@ -715,8 +715,8 @@ section a {
 
 @media (max-width: 1366px) {
     .headerItem {
-        font-size: 100%;
-        padding: 6px 10px;
+        font-size: 105%;
+        padding: 7px 12px;
     }
 
     #navLinks {
