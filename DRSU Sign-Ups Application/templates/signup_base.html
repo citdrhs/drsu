@@ -57,30 +57,30 @@
     <section id="tables">
         <br>
         
-        {% for table, signups in signup_tables.items() %}
-            <table id="{{ table.lower() }}Signup">
+        {% for table_id, signups in signup_tables.items() %}
+            {% set table_info = tables[loop.index0] %}
+            <table id="{{ table_info[2].lower() }}Signup">
                 <thead>
                     <tr>
-                        <th id="{{ table }}_th" colspan="4">
-                            {{ table }} ({{ max_entries[table] - signups|length }}/{{ max_entries[table] }}) Slots Available
+                        <th id="{{ table_info[2] }}_th" colspan="4">
+                            {{ table_info[2] }} ({{ max_entries[table_id] - signups|length }}/{{ max_entries[table_id] }}) Slots Available
                         </th>
                     </tr>
-                    {% if tables[loop.index0][5] %}
+                    {% if table_info[5] %}
                     <tr>
                         <td colspan="4" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%); font-style: italic; padding: 12px; border-bottom: 3px solid #ffc107; border-left: 5px solid #ff9800; font-weight: bold; font-size: 1.05em;">
-                            <span style="color: #856404;">📝 Note:</span> <span style="color: #333;">{{ tables[loop.index0][5] }}</span>
+                            <span style="color: #856404;">📝 Note:</span> <span style="color: #333;">{{ table_info[5] }}</span>
                         </td>
                     </tr>
                     {% endif %}
+                    <tr>
+                        <th>Name</th>
+                        <th>Dish</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Name</td>
-                        <td>Dish</td>
-                        <td>Email</td>
-                        <td></td>
-                    </tr>
-
                     {% for signup in signups %}
                         <tr>
                             <td>{{ signup[2] }}</td>
@@ -122,11 +122,11 @@
                     <tr class="signUp">
                         <td colspan="4">
                             {% if admin %}
-                                <button class="big-button delete-table-button" data-url="{{ url_for('delete_table', id=tables[loop.index-1][0]) }}">Delete Table</button>
-                                <button class="edit-table-button big-button" data-table-id="{{ tables[loop.index0][0] }}" data-category="{{ tables[loop.index0][2] }}" data-max-entries="{{ tables[loop.index0][3] }}" data-vieworder="{{ tables[loop.index0][4] }}" data-notes="{{ tables[loop.index0][5] or '' }}">Edit Table</button>
+                                <button class="big-button delete-table-button" data-url="{{ url_for('delete_table', id=table_info[0]) }}">Delete Table</button>
+                                <button class="edit-table-button big-button" data-table-id="{{ table_info[0] }}" data-category="{{ table_info[2] }}" data-max-entries="{{ table_info[3] }}" data-vieworder="{{ table_info[4] }}" data-notes="{{ table_info[5] or '' }}">Edit Table</button>
                             {% endif %}
-                            {% if max_entries[table] - signups|length > 0 %}
-                                <button class="big-button signUpButton" data-table-id="{{ tables[loop.index0][0] }}" id="{{ table }}">Sign up</button>
+                            {% if max_entries[table_id] - signups|length > 0 %}
+                                <button class="big-button signUpButton" data-table-id="{{ table_info[0] }}" id="{{ table_info[2] }}">Sign up</button>
                             {% endif %}
                         </td>
                     </tr>

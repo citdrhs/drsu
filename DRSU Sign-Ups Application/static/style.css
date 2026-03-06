@@ -60,6 +60,7 @@ body{
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    white-space: nowrap;
 }
 
 .headerItem:hover {
@@ -684,6 +685,57 @@ section a {
     textarea {
         font-size: 1.1rem;
         padding: 12px;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR MEDIUM LAPTOP SCREENS (ThinkPads, etc.) ===== */
+
+@media (max-width: 1600px) {
+    .headerItem {
+        font-size: 100%;
+        padding: 6px 10px;
+    }
+
+    #navLinks {
+        gap: 8px;
+    }
+
+    #homePage {
+        width: 22%;
+    }
+
+    #CITSignups {
+        font-size: 2.8vw;
+    }
+
+    #CITLogo {
+        width: 16%;
+        height: 18%;
+    }
+}
+
+@media (max-width: 1366px) {
+    .headerItem {
+        font-size: 90%;
+        padding: 5px 8px;
+    }
+
+    #navLinks {
+        gap: 6px;
+    }
+
+    #homePage {
+        width: 20%;
+    }
+
+    #CITSignups {
+        font-size: 2.5vw;
+        left: 3%;
+    }
+
+    #CITLogo {
+        width: 15%;
+        height: 16%;
     }
 }
 

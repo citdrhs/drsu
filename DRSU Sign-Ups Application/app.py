@@ -585,8 +585,8 @@ def create_app():
             print(table_id)
             print(data)
 
-            signup_dict[category] = data
-            max_entries_dict[category] = max_entries
+            signup_dict[table_id] = data
+            max_entries_dict[table_id] = max_entries
 
         #Print statement for TESTING
         print(signup_dict)
