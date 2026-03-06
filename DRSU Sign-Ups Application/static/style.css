@@ -128,6 +128,8 @@ section a {
     margin-top: 1.7%;
     font-size: 3.7vw;
     color: white;
+    white-space: nowrap;
+    line-height: 1;
 }
 
 #calendarText {
@@ -704,7 +706,7 @@ section a {
     }
 
     #CITSignups {
-        font-size: 3.3vw;
+        font-size: 3vw;
     }
 
     #CITLogo {
@@ -728,7 +730,7 @@ section a {
     }
 
     #CITSignups {
-        font-size: 3vw;
+        font-size: 2.6vw;
         left: 3%;
     }
 
