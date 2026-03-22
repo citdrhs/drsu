@@ -1,0 +1,69 @@
+<!--Inherits page_base template-->
+{% extends 'page_base.html' %}
+
+<head>
+    {% block title %} CIT Signups Archived Events {% endblock %}
+    {% block extra_styling_js %}
+        <script src="{{ url_for('static', filename='dimmer.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='rain.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='indexScript.js') }}" defer></script>
+    {% endblock %}
+</head>
+
+{% block heading %}
+        <section class="roundedBox" id="welcome">
+            <h1>Archived Events</h1>
+        </section>
+{% endblock %}
+
+{% block content %}
+    
+        <section class="roundedBox" id="events">
+            {% if events|length == 0 %}
+                <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">No archived events</p>
+            {% else %}
+                <section id="#eventsMenu">
+                    {% for event in events %}
+                    
+                        <a href="{{ url_for('viewEvent', event_id = event[0]) }}">
+                            <section class="roundedBox eventBox" style="background-image: url('{{ url_for('static', filename='images/' ~ event[7]) }}');">
+                                <!--
+                                    Integrates style attribute to grab background_image, Does not cause error
+                                    Don't worry about the red stuff if it really bothers you it can probably be better done using js
+                                -->
+                                <h1 class="eventTitle">
+                                  <span class="eventDimmer">{{ event[1] }}</span>
+                                </h1>
+                                
+                                <section class="eventInfo">
+                                    <p><b>Date: </b>{{ event[2] }}</p>
+                                    <p><b>Time and Location: </b>{{ event[3] }}-{{ event[4] }} @ {{ event[5] }}</p>
+                                    <p><b>Contact:</b> {{ event[9]}} {{event[10] }} - <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ event[6] }}" target="_blank" class="textLink">{{ event[6] }}</a></p>
+                                    {% if event[8] %}
+                                    <p><i>Note: {{ event[8] }}</i></p>
+                                    {% endif %}
+                                </section>
+                                {% if admin %}
+                                    <form method="POST" action="{{ url_for('unarchive_event', event_id=event[0]) }}" style="display:inline;">
+                                        <button type="submit" class="edit-event-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔄 Unarchive</button>
+                                    </form>
+                                    <br>
+                                {% endif %}
+                            </section>
+                            
+                        </a>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        </section>
+
+        <section id="footer">
+
+        </section>
+        </section>
+
+        <div class="binary-container"></div>
+
+        </div>
+
+{% endblock %}
