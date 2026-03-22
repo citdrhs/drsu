@@ -1,0 +1,45 @@
+<!--Inherits page_base template-->
+{% extends 'page_base.html' %}
+
+<head>
+    {% block title %} About CIT Signups {% endblock %}
+</head>
+
+{% block heading %}
+    <section class="roundedBox" id="welcome">
+        <h1>Welcome to CIT Signups!</h1>
+    </section>
+    <section class="roundedBox" id="expectations">
+        <h2>Expectations</h2>
+        <p>All CIT Signups users are expected to abide by the following:</p>
+        <ul>
+            <li>Users are expected to use CIT Signups responsibly in accordance with the <a class="textLink" href="https://www.henricoschools.us/documents/departments/disciplinary-review-hearing-office/421233" target="_blank">HCPS Code of Conduct</a> and the expectations outlined in the CIT Handbook. Violation of these rules will not be tolerated.</li>
+            <li>All signups must be relevant, school-appropriate, and aligned with the requirements for that item (eg. allergen-free foods).</li>
+        </ul>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <section class="roundedBox" id="about-content">
+        <h2>About CIT Signups</h2>
+        <p>CIT Signups is a centralized platform designed to help Deep Run High School students and staff coordinate and manage event signups for Center for Information Technology (CIT) activities.</p>
+
+        <h3>Getting Started</h3>
+        <p>Once logged in, you can:</p>
+        <ul>
+            <li>View all upcoming CIT events</li>
+            <li>Sign up for activities that interest you</li>
+            <li>View the calendar of all scheduled events</li>
+            <li>Manage your profile and event participation</li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('homePage') }}" style="display: inline-block; margin-right: 20px;">
+                <button class="big-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">View Events</button>
+            </a>
+            <a href="{{ url_for('calendar') }}" style="display: inline-block;">
+                <button class="big-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">View Calendar</button>
+            </a>
+        </div>
+    </section>
+{% endblock %}
