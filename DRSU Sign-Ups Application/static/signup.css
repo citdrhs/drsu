@@ -1,0 +1,508 @@
+/*Sign up page styling*/
+
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.3em;
+    cursor: pointer;
+    padding: 5px 8px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    margin: 0 3px;
+}
+
+.icon-button:hover {
+    transform: scale(1.2);
+    filter: brightness(1.2);
+}
+
+.edit-signup-button:hover {
+    filter: drop-shadow(0 0 3px #4CAF50);
+}
+
+.delete-signup-button:hover {
+    filter: drop-shadow(0 0 3px #f44336);
+}
+
+.eventDetails {
+    padding-left: 2.5%
+}
+
+table, th, td {
+    border: 1px solid black;
+    /*border-collapse: collapse;*/
+    background-color: white;
+    padding: 8px;
+    border-collapse: collapse;
+}
+
+table {
+    border-radius: 10px;
+    margin: 0px;
+    position: relative;
+    width: 90%;
+    left: 5%;
+    table-layout: fixed;
+}
+
+/* Column width specifications */
+table td:nth-child(1), /* Name column */
+table th:nth-child(1) {
+    width: 15%;
+}
+
+table td:nth-child(2), /* Dish column */
+table th:nth-child(2) {
+    width: 45%;
+}
+
+table td:nth-child(3), /* Email column */
+table th:nth-child(3) {
+    width: 25%;
+}
+
+table td:nth-child(4), /* Actions column */
+table th:nth-child(4) {
+    width: 15%;
+}
+
+th, td {
+    margin: 0px;
+}
+
+tfoot td{
+    text-align: right;
+}
+
+/*Alternating colors on the sign up table*/
+
+th {
+    background-color: rgb(112, 191, 255);
+}
+
+tr:nth-child(odd) td {
+    background-color: rgb(163, 214, 255);
+}
+
+tr:nth-child(even) td {
+    background-color: rgb(112, 191, 255);
+}
+
+/*Big buttons change color when hovered over*/
+.signUpButton {
+    cursor: pointer;
+}
+
+.signUpButton:hover {
+    background-color: #e2e2e2;
+}
+
+/*Inputs*/
+
+#inputs{
+    display: none;
+    z-index: 6;
+    background-color: white;
+    position: fixed;
+    width: 60%;
+    height: 55%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-radius: 40px;
+    border: 5px solid black;
+    overflow: hidden;
+    color: black;
+}
+
+#inputs input[type="text"],
+#inputs textarea{
+    width: 80%;
+    font-size: 1.1vw;
+    box-sizing: border-box;
+}
+
+#extras{
+    min-height: 90px;
+    resize: vertical;
+    font-size: 1vw;
+}
+
+#confirm{
+    position: relative;
+    margin-top: 0.5%;
+    height: 2.5vw;
+    font-size: 1vw;
+    height: 2.5vw;
+    
+}
+
+#inputHeader{
+    background-color: rgb(30, 109, 173);
+    width: 100%;
+    margin: 0px;
+    padding: 0.002%;
+    border-radius: 30px;
+    margin-bottom: 1%;
+}
+
+#signUpHeader{
+    margin: 2%;
+    font-size: 2.5vw;
+    color:white;
+}
+
+#closeSignUp{
+    position: absolute;
+    top: 4%;
+    right: 2%;
+    height:15%;
+    transition: transform 0.3s ease-in-out;
+}
+
+#closeSignUp:hover{
+    cursor: pointer;
+    transform: scale(1.10);
+}
+
+#deleteSignupPopup, #deleteTablePopup{
+    display: none; 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+#tableForm{
+    position: fixed;
+    align-content: center;
+    top:30%;
+    left: 30%;
+    width: 40%;
+    height: 27%;
+    padding: 1%;
+    padding-top: 0%;
+    display: none;
+    background-color: white;
+    z-index: 5;
+    border-radius: 20px;
+    border:3px black solid;
+}
+
+.comment-icon {
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 1.3em;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+}
+
+.comment-icon:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 5px #2196F3);
+}
+
+.comment-popup {
+    display: none;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    background-color: #fff;
+    border: 2px solid #555;
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    max-width: 30%;
+    text-align: center;
+}
+
+.comment-content {
+    position: relative;
+    padding: 0%;
+    margin: 0px;
+}
+
+.comment-content p {
+    margin: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.close-button {
+    position: relative;
+    top: -5%;
+    padding: 0%;
+    margin: 0px;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+
+.alert {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    text-align: center;
+  }
+  
+  .alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+  }
+  
+  .alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+  }
+  
+  .alert-warning {
+    color: #664d03;
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+  }
+  
+  .alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+  }
+
+/* ===== RESPONSIVE DESIGN FOR LARGE DISPLAYS (1920x1080 and above) ===== */
+
+@media (min-width: 1920px) {
+    table {
+        width: 85%;
+        font-size: 1rem;
+    }
+
+    table, th, td {
+        padding: 14px;
+    }
+
+    th {
+        font-size: 1.1rem;
+    }
+
+    #inputs {
+        width: 50%;
+        height: auto;
+        max-width: 900px;
+        overflow: auto;
+        max-height: 80vh;
+    }
+
+    #inputs input[type="text"] {
+        width: 85%;
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    #tableForm {
+        width: 45%;
+        height: auto;
+        left: 27.5%;
+        top: 35%;
+        overflow: auto;
+        max-height: 70vh;
+    }
+
+    #tableForm textarea {
+        font-size: 1rem;
+        padding: 10px;
+        width: 85%;
+        min-height: 80px;
+    }
+
+    #extras {
+        height: auto;
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    #confirm {
+        height: auto;
+        font-size: 1rem;
+        margin-top: 1rem;
+        padding: 10px 20px;
+    }
+
+    #signUpHeader {
+        font-size: 1.8rem;
+        margin: 1.5rem;
+    }
+
+    #closeSignUp {
+        height: 12%;
+    }
+
+    .signUpButton {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+
+    #deleteSignupPopup, #deleteTablePopup {
+        width: 350px;
+        padding: 25px;
+        font-size: 1rem;
+    }
+
+    .comment-popup {
+        max-width: 500px;
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR EXTRA-LARGE DISPLAYS (2560px and above) ===== */
+
+@media (min-width: 2560px) {
+    table {
+        width: 80%;
+        font-size: 1.1rem;
+    }
+
+    table, th, td {
+        padding: 16px;
+    }
+
+    #inputs {
+        width: 45%;
+        max-width: 1100px;
+    }
+
+    #inputs input[type="text"] {
+        font-size: 1.1rem;
+        padding: 12px;
+    }
+
+    #tableForm {
+        width: 40%;
+        left: 30%;
+    }
+
+    #tableForm textarea {
+        font-size: 1.1rem;
+        padding: 12px;
+        min-height: 100px;
+    }
+
+    .signUpButton {
+        padding: 12px 18px;
+        font-size: 1.1rem;
+    }
+
+    #signUpHeader {
+        font-size: 2rem;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR MOBILE AND TABLET SCREENS ===== */
+
+@media (max-width: 768px) {
+    table {
+        width: 95%;
+        left: 2.5%;
+        font-size: 0.9rem;
+    }
+
+    table, th, td {
+        padding: 8px;
+    }
+
+    #inputs {
+        width: 90%;
+        max-width: none;
+        height: auto;
+        max-height: 90vh;
+    }
+
+    #inputs input[type="text"] {
+        width: 85%;
+        font-size: 0.95rem;
+        padding: 8px;
+    }
+
+    #tableForm {
+        width: 85%;
+        left: 7.5%;
+        top: 40%;
+        height: auto;
+        max-height: 80vh;
+    }
+
+    #tableForm textarea {
+        font-size: 0.95rem;
+        padding: 8px;
+        width: 85%;
+        min-height: 60px;
+    }
+
+    #extras {
+        height: auto;
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    #confirm {
+        height: auto;
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        margin-top: 0.5rem;
+    }
+
+    #signUpHeader {
+        font-size: 1.4rem;
+        margin: 1rem;
+    }
+
+    #closeSignUp {
+        height: 10%;
+    }
+
+    .signUpButton {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    #deleteSignupPopup, #deleteTablePopup {
+        width: 280px;
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+
+    .comment-popup {
+        max-width: 80%;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .close-button {
+        font-size: 1rem;
+    }
+
+    .alert {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+  
