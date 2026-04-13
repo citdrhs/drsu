@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve citsignups
+After=network.target
+
+[Service]
+User=grit
+Group=www-data
+WorkingDirectory=/home/grit/www
+Environment=PATH=/home/grit/www/venv/bin
+ExecStart=/home/grit/www/venv/bin/gunicorn --workers 3 --bind unix:citsignups.sock -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target
