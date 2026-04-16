@@ -46,6 +46,40 @@
         margin: 0 auto 20px; 
         object-fit: contain;
         }
+
+        .account-actions {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .account-action-btn {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 10px 12px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .create-account-btn {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .forgot-password-btn {
+            background-color: #f8f9fa;
+            color: #212529;
+            border: 1px solid #ced4da;
+        }
+
+        .account-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
         
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">    
@@ -77,8 +111,10 @@
             <input type="submit" id="submit" name="submit" value="Login">
         </div>
     </form></br>
-    <a href="/drsu/create_account/">Create Account</a><br>
-    <a href="/drsu/forgot_password/">Forgot Password?</a>
+    <div class="account-actions">
+        <a class="account-action-btn create-account-btn" href="/drsu/create_account/">Create Account</a>
+        <a class="account-action-btn forgot-password-btn" href="/drsu/forgot_password/">Forgot Password?</a>
+    </div>
 </body>
 </html>
 
