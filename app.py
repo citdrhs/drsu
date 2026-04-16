@@ -13,6 +13,9 @@ from flask import flash
 from better_profanity import profanity
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import RequestEntityTooLarge
 
 
 #==================================================================================================================================================================#
@@ -48,12 +51,20 @@ def create_app():
    # global global_app
     #app=Flask(__name__)
 
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Or another SMTP server
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtppro.zoho.com')
+    app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 465))
+    app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'false').lower() == 'true'
+    app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'true').lower() == 'true'
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') or os.environ.get('EMAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') or os.environ.get('EMAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
+    app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024
     mail = Mail(app)  # Initialize mail here
+
+    @app.errorhandler(RequestEntityTooLarge)
+    def handle_large_upload(_error):
+        flash("Uploaded image is too large. Please use an image under 8MB.", "danger")
+        return redirect(url_for('homePage'))
 
     def generate_confirmation_token(email):
         print("entered generate token")
@@ -80,6 +91,26 @@ def create_app():
         print("4")
         msg.html = html
         print("sending")
+        mail.send(msg)
+
+    def generate_reset_token(email):
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        return serializer.dumps(email, salt='password-reset-salt')
+
+    def confirm_reset_token(token, expiration=3600):
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        try:
+            email = serializer.loads(token, salt='password-reset-salt', max_age=expiration)
+        except Exception:
+            return False
+        return email
+
+    def send_reset_password_email(user_email):
+        token = generate_reset_token(user_email)
+        reset_url = url_for('reset_password', token=token, _external=True)
+        html = render_template('reset_password_email.html', reset_url=reset_url)
+        msg = Message("Reset Your Password", sender=app.config['MAIL_USERNAME'], recipients=[user_email])
+        msg.html = html
         mail.send(msg)
     
     @app.route('/confirm/<token>/')
@@ -172,10 +203,11 @@ def create_app():
 
         if request.method == 'POST':
             print("entered post")
-            if form.validate_on_submit:
+            if form.validate_on_submit():
                 print("inside validate_on_submit")
                 try:
-                    user = User.query.filter_by(email=form.email.data).first()
+                    email = form.email.data.strip().lower()
+                    user = User.query.filter(func.lower(User.email) == email).first()
                     if user:
                         print("User exists")
                         if bcrypt.check_password_hash(user.password, form.password.data):
@@ -195,6 +227,11 @@ def create_app():
                 except Exception as e:
                     print(e)
                     flash("An error occurred while trying to log in. Please try again.", "danger")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        if field != 'csrf_token':
+                            flash(f"{field}: {error}", "danger")
 
         
         return render_template("login.html", form=form)
@@ -208,58 +245,131 @@ def create_app():
     
     #Route below is for testing on the server, Switch commenting when not testing on server
     @app.route("/register", methods=['GET', 'POST'])
+    @app.route("/create_account", methods=['GET', 'POST'])
     @app.route("/drsu/register/", methods=['GET', 'POST'])
+    @app.route("/drsu/create_account/", methods=['GET', 'POST'])
     def register():
         form = RegisterForm()
 
         if request.method == 'POST':
             if form.validate_on_submit():
-                existing_user = User.query.filter_by(email=form.email.data).first()
+                email = form.email.data.strip().lower()
+                existing_user = User.query.filter(func.lower(User.email) == email).first()
                 if profanity.contains_profanity(form.first_name.data) or profanity.contains_profanity(form.last_name.data):
-                    flash("No use of profanity allowed.", "danger")
-                    return redirect(url_for('register'))
+                    flash("Your name may contain flagged words. If this is your real name, you can ignore this warning.", "warning")
                 if existing_user:
                     flash("Email is already in use. Please choose a different one.", "danger")
-                    return redirect(url_for('register'))
+                    return render_template("register.html", form=form)
                 
                 if form.password.data != form.confirmPassword.data:
                     flash("Passwords do not match!", "danger")
-                    return redirect(url_for('register'))
+                    return render_template("register.html", form=form)
 
                 
                 if len(form.password.data) < 8:
                     flash("Password must be at least 8 characters long.", "danger")
-                    return redirect(url_for('register'))
+                    return render_template("register.html", form=form)
+
+                grade_value = int(form.grade.data) if form.grade.data else None
 
                 
                 hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
                 user = User(
-                    email=form.email.data,
+                    email=email,
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
                     password=hashed_password,
-                    grade=form.grade.data,
+                    grade=grade_value,
                     is_admin=form.is_admin.data
                 )
 
                 try:
-                    session['pending_user'] = {
-                        "email": form.email.data,
-                        "first_name": form.first_name.data,
-                        "last_name": form.last_name.data,
-                        "password": bcrypt.generate_password_hash(form.password.data).decode('utf-8'),
-                        "grade": form.grade.data,
-                        "is_admin": form.is_admin.data
-                    }
-                    send_confirmation_email(form.email.data)
-                    flash("A confirmation email has been sent. Please check your inbox.", "info")
+                    db.session.add(user)
+                    db.session.commit()
+                    flash("Account created successfully. Please log in.", "success")
                     return redirect(url_for('index'))
+                except IntegrityError:
+                    db.session.rollback()
+                    flash("Email is already in use. Please choose a different one.", "danger")
+                    return render_template("register.html", form=form)
                 except Exception as e:
                     db.session.rollback()
-                    #flash(f"An error occurred: {e}", "danger")
+                    flash("There was an error creating your account. Please try again.", "danger")
                     print(e)
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f"{field}: {error}", "danger")
             
         return render_template("register.html", form=form)
+
+    @app.route("/forgot_password", methods=['GET', 'POST'])
+    @app.route("/drsu/forgot_password/", methods=['GET', 'POST'])
+    def forgot_password():
+        if request.method == 'POST':
+            email = request.form.get('email', '').strip().lower()
+            try:
+                user = User.query.filter(func.lower(User.email) == email).first()
+                if user:
+                    send_reset_password_email(email)
+            except Exception as e:
+                print(e)
+
+            flash("If that email exists, a reset link was sent.", "info")
+            return redirect(url_for('index'))
+
+        return render_template("forgot_password.html")
+
+    @app.route('/reset_password/<token>', methods=['GET', 'POST'])
+    @app.route('/drsu/reset_password/<token>/', methods=['GET', 'POST'])
+    def reset_password(token):
+        email = confirm_reset_token(token)
+        if not email:
+            flash("The password reset link is invalid or expired.", "danger")
+            return redirect(url_for('forgot_password'))
+
+        if request.method == 'POST':
+            password = request.form.get('password', '')
+            confirm_password = request.form.get('confirmPassword', '')
+
+            if password != confirm_password:
+                flash("Passwords do not match.", "danger")
+                return render_template("reset_password.html", token=token)
+
+            if len(password) < 8:
+                flash("Password must be at least 8 characters long.", "danger")
+                return render_template("reset_password.html", token=token)
+
+            user = User.query.filter(func.lower(User.email) == email.lower()).first()
+            if not user:
+                flash("Account not found.", "danger")
+                return redirect(url_for('index'))
+
+            user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+            db.session.commit()
+            flash("Password reset successful. Please log in.", "success")
+            return redirect(url_for('index'))
+
+        return render_template("reset_password.html", token=token)
+
+    @app.route('/account_details')
+    @app.route('/drsu/account_details/')
+    def account_details():
+        if 'email' not in session:
+            return redirect(url_for('index'))
+
+        email = session.get('email')
+        user = User.query.filter(func.lower(User.email) == email.lower()).first()
+        if not user:
+            flash("Account details not found.", "danger")
+            return redirect(url_for('homePage'))
+
+        return render_template(
+            'account_details.html',
+            admin=session.get('is_admin', False),
+            email=session.get('email'),
+            user=user
+        )
 
     #Display about page
     @app.route("/about")
@@ -484,6 +594,32 @@ def create_app():
         conn.close()
         
         return redirect(url_for('archived_events'))
+
+    #Delete an event (admin only)
+    @app.route("/delete_event/<int:event_id>", methods=['POST'])
+    @app.route("/drsu/delete_event/<int:event_id>/", methods=['POST'])
+    def delete_event(event_id):
+        if 'email' not in session:
+            return redirect(url_for('index'))
+
+        is_admin = session.get('is_admin', False)
+        if not is_admin:
+            return redirect(url_for('homePage'))
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Delete dependent rows first so event deletion works regardless of FK cascade setup.
+        cur.execute('DELETE FROM event_signups WHERE table_id IN (SELECT id FROM event_tables WHERE event_id = %s);', (event_id,))
+        cur.execute('DELETE FROM event_tables WHERE event_id = %s;', (event_id,))
+        cur.execute('DELETE FROM events WHERE id = %s;', (event_id,))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        flash("Event deleted successfully.", "success")
+        return redirect(url_for('homePage'))
     
     #Route below is for testing on the server, Switch commenting when not testing on server
     @app.route("/calendar")
@@ -644,6 +780,10 @@ def create_app():
         #Dish and comments taken from user input
         dish = request.form['dish']
         comment = request.form.get('extras', '')
+        dietary_restrictions = request.form.get('dietary_restrictions', '').strip()
+
+        if dietary_restrictions:
+            comment = f"{comment}\nDietary Restrictions: {dietary_restrictions}".strip()
 
         #Connect to database
         conn = get_db_connection()
@@ -656,8 +796,7 @@ def create_app():
         print(eventID)
         
         if profanity.contains_profanity(dish) or profanity.contains_profanity(comment):
-            flash("Profanity is not allowed in the signup. Please remove inappropriate language.", "danger")
-            return redirect(url_for('viewEvent', event_id=eventID))
+            flash("Some text may have been flagged by the filter. Please review before submitting next time.", "warning")
 
         cur.execute('SELECT first_name, last_name FROM public.user WHERE email = %s', (email,))
         #Data is in within a tuple inside a list: [(first_name, last_name)]
@@ -693,8 +832,7 @@ def create_app():
         event_id = cur.fetchone()[0]
 
         if profanity.contains_profanity(dish) or profanity.contains_profanity(comment):
-            flash("Profanity is not allowed in the signup. Please remove inappropriate language.", "danger")
-            return redirect(url_for('viewEvent', event_id=event_id))
+            flash("Some text may have been flagged by the filter. Please review before submitting next time.", "warning")
 
         cur.execute('''
             UPDATE event_signups
@@ -902,6 +1040,12 @@ def create_app():
         signups = cur.fetchall()
         email_list = [signup[0] for signup in signups]
 
+        if not email_list:
+            flash("No participant emails found for this event yet.", "warning")
+            cur.close()
+            conn.close()
+            return redirect(url_for('viewEvent', event_id=event_id))
+
         if request.method == 'POST':
             template_type = request.form.get('template')
             subject = request.form.get('subject')
@@ -931,6 +1075,7 @@ def create_app():
             # Send emails to all participants
             try:
                 sent_count = 0
+                failed_recipients = []
                 for recipient in email_list:
                     try:
                         msg = Message(subject, sender=app.config['MAIL_USERNAME'], recipients=[recipient])
@@ -939,12 +1084,17 @@ def create_app():
                         sent_count += 1
                     except Exception as e:
                         print(f"Failed to send email to {recipient}: {str(e)}")
+                        failed_recipients.append((recipient, str(e)))
                         continue
 
                 if sent_count > 0:
-                    flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "success")
+                    if failed_recipients:
+                        flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "warning")
+                    else:
+                        flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "success")
                 else:
-                    flash("Failed to send emails. Please check your email configuration.", "danger")
+                    first_error = failed_recipients[0][1] if failed_recipients else "Unknown mail error"
+                    flash(f"No emails were sent. Mail server response: {first_error}", "danger")
                 return redirect(url_for('viewEvent', event_id=event_id))
             except Exception as e:
                 flash(f"Error sending emails: {str(e)}", "danger")
