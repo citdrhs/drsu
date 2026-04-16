@@ -18,6 +18,7 @@ jobs:
           username: drsu
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
             cd /home/drsu/www
             git fetch origin main
             git reset --hard origin/main
