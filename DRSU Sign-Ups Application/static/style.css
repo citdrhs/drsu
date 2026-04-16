@@ -1,0 +1,875 @@
+/*General styling START*/
+
+/* Universal button styling */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+    cursor: pointer;
+}
+
+body{
+    margin: 0px;
+    background-color: rgb(234,234,234);
+    background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px);
+    font-family: 'Lucida Bright', 'Times New Roman';
+    font-size: 1.2vw;
+    margin: 0;
+}
+
+/*Header*/
+
+
+#headerSection{
+    display: flex;
+    position: relative;
+    margin: 0px;
+    padding: 0px; 
+    width: 100%;
+    height: 10.5%;
+    top:0%;
+    left: 0%;
+    z-index: 5;
+
+
+    /*Vertically centers header items*/
+    align-items: center;
+
+
+    /*Old header styling*/
+    /*background-image: linear-gradient(to bottom right, rgb(57,117,166), rgb(4,42,77));*/
+    background-image: linear-gradient(to right, rgb(30, 109, 173), rgb(0, 61, 117));
+}
+
+#navLinks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 15px;
+    justify-content: center;
+    max-width: 55%;
+}
+
+.headerItem {
+    color: white;
+    font-size: 130%;
+    font-weight: bold;
+    padding: 10px 18px;
+    margin: 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.headerItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+
+/*Styling for header items that link to other pages*/
+a.headerLink {
+    text-decoration: none;
+    color: white;
+}
+
+
+/*Color darkens when hovered over*/
+a.headerLink:hover {
+    color: rgb(207, 207, 207);
+}
+
+section a {
+    text-decoration: none;
+    color: black;
+}
+
+.textLink {
+    color: blue;
+    text-decoration: underline;
+}
+
+
+#signinText:hover {
+    color: rgb(207, 207, 207);
+}
+
+#homePage{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    transition: transform 0.3s ease-in-out;
+    transform-origin: left;
+    cursor: pointer;
+    top: 0%;
+    width: 27%;
+    height: 100%;
+}
+
+/*Logo expands when hovered over*/
+#homePage:hover {
+    transform: scale(1.05);
+}
+
+#CITLogo{
+    position: relative;
+    left: 3%;
+    height: 56px;
+    width: 18%;
+    margin: 1%;
+    object-fit: contain;
+}
+
+#CITSignups{
+    position: relative;
+    left: 5%;
+    font-weight:bolder;
+    margin: 0px;
+    margin-top: 0;
+    font-size: clamp(1.5rem, 3vw, 3.2rem);
+    color: white;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+#calendarText {
+    /*Pushes "Calendar" and "Sign in" to the far right*/
+    position: relative;
+    left: 40%;
+    margin: 1.5%;
+}
+
+
+#signinText {
+    border: none !important;
+    padding: 0 6px !important;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+}
+
+#bodySection {
+    position: relative;
+    width: 80%;
+    margin-left: 10%;
+    margin-top: 1%;
+}
+
+.roundedBox {
+    background-color: white;
+    border-radius: 40px;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    margin-bottom: 2%;
+    transition: transform 0.3s ease-in-out;
+}
+
+/*Rounded boxes expand when hovered over*/
+.eventBox:hover {
+    transform: scale(1.05);
+}
+
+.big-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.2%;
+    border-radius: 8px;
+    font-size: 1.2vw;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.big-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+#optionBarTrigger{
+    position: absolute;
+    margin: 0px;
+    right: 1%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 18%;
+}
+
+#optionBarTrigger:hover ~ #dropdown,
+#dropdown:hover,
+#optionBarTrigger.dropdown-active ~ #dropdown,
+#dropdown.dropdown-active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#dropdown{
+    position: absolute;
+    z-index: 4;
+    right: 0%;
+    top: 100%;
+    width: 16.5%;
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#dropdown p{
+    background-color: rgb(202, 202, 202);
+    margin: 0px;
+    text-align: center;
+    padding: 5%;
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 2px black;
+    transition: background-color 0.2s;
+}
+
+#dropdown p:hover{
+    background-color: rgb(180, 180, 180);
+    cursor:pointer;
+}
+
+#logOut{
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    background-color: #d32f2f !important;
+}
+
+
+
+/*General styling END*/
+
+
+/*Home page styling*/
+
+#welcome {
+    background-image: url("./images/TechBG.jpg"), url("./images/TechBGReverse.jpg");
+    background-position: left, right;
+    background-repeat: no-repeat;
+    background-color: rgb(1,12,27);
+    color: white;
+    overflow: hidden;
+    font-size: 1.6vw;
+    text-align: center;
+}
+
+#calendarIcon {
+    height: 5%;
+    width: 5%;
+    margin-left: auto;
+}
+
+#expectations {
+    padding-left: 2.5%
+}
+
+#about-content {
+    padding: 2.5%;
+}
+
+#about-content h3 {
+    margin-top: 20px;
+    color: #1976D2;
+    border-bottom: 2px solid #2196F3;
+    padding-bottom: 10px;
+}
+
+#about-content ul {
+    line-height: 1.8;
+}
+
+#about-content li {
+    margin-bottom: 10px;
+}
+
+#about-content strong {
+    color: #1565C0;
+}
+
+/*Events*/
+
+
+#events{
+    position: relative;
+    /*Does not expand when hover*/
+    transform: none;
+    text-align: center;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+#eventsMenu {
+    display: flex;
+    justify-content: center;
+}
+
+
+.roundedSquare {
+    border-radius: 40px;
+    width: 25%;
+    text-align: center;
+    margin-bottom: 2%;
+
+    padding-top: 7%;
+    padding-bottom: 7%;
+
+    transition: transform 0.3s ease-in-out;
+}
+
+.roundedSquare:hover {
+    transform: scale(1.05);
+}
+
+.eventBox{
+    position: relative;
+    padding: 0px;
+    border: 5px solid black;
+    overflow: hidden;
+    color: black;
+    min-height: 280px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.eventTitle{
+    margin-top: 0px;
+    padding: 5%;
+    min-height: 120px;
+    color: white;
+    font-size: 2.5vw;
+    font-weight: bold;
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.eventInfo{
+    position: relative;
+    padding: 3%;
+    padding-bottom: 1%;
+    font-size: 1.1vw;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+.eventInfo p {
+    color: #333;
+    font-weight: 500;
+}
+
+.eventInfo p:has(i) {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    padding: 10px;
+    border-left: 4px solid #2196F3;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.eventTitleLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.edit-event-button {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1vw;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    transition: all 0.3s ease;
+}
+
+.edit-event-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+}
+
+.eventDimmer{
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-shadow: 
+        -2px -2px 3px black,
+        2px -2px 3px black,
+        -2px  2px 3px black,
+        2px  2px 3px black;
+    display: inline-block;
+}
+
+/* TESTING 
+#WinterGathering {
+    position: relative;
+    background-image: url("./ThanksgivingBG.jpg");
+    background-size: 100% 100%;
+    color: black;
+}
+*/    
+
+.binary-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* Prevents interference with clicks */
+    z-index: -1; /* Keeps it in the background */
+}
+
+.binary {
+    position: absolute;
+    /*color: rgb(46, 222, 46);*/
+    color: rgb(0, 96, 206);
+    font-family: monospace;
+    font-size: 2vw;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-5%);
+    }
+    to {
+        transform: translateY(105vh);
+    }
+}
+
+#addEventInput{
+    display: none;
+    z-index: 10;
+    background-color: white;
+    position: fixed;
+    width: 60%;
+    max-width: 900px;
+    max-height: 80vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-radius: 40px;
+    border: 5px solid black;
+    overflow: auto;
+    color: black;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal backdrop */
+#modalBackdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9;
+}
+
+#modalBackdrop.active {
+    display: block;
+}
+
+#addEventInput {
+    display: none;
+}
+
+#addEventInput.active {
+    display: block;
+}
+
+#addEventInputHeader{
+    background-color: rgb(30, 109, 173);
+    width: 100%;
+    margin: 0px;
+    padding: 2%;
+    border-radius: 30px 30px 0 0;
+    margin-bottom: 1%;
+}
+#addEventHeader{
+    margin: 2%;
+    font-size: 2.5vw;
+    color:white;
+}
+#closeAddEvent{
+    position: absolute;
+    top: 4%;
+    right: 2%;
+    height:15%;
+    transition: transform 0.3s ease-in-out;
+}
+
+#closeAddEvent:hover{
+    cursor: pointer;
+    transform: scale(1.10);
+}
+/* ===== RESPONSIVE DESIGN FOR LARGE DISPLAYS (1920x1080 and above) ===== */
+
+@media (min-width: 1920px) {
+    /* Adjust font sizes for large screens */
+    body {
+        font-size: 16px;
+    }
+
+    .headerItem {
+        font-size: 1.95rem;
+    }
+
+    #CITSignups {
+        font-size: 2.5rem;
+        margin-top: 1rem;
+    }
+
+    #welcome {
+        font-size: 1.3rem;
+    }
+
+    .big-button {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+
+    .eventTitle {
+        font-size: 2rem;
+        padding: 2rem;
+    }
+
+    .eventBox {
+        border: 4px solid black;
+    }
+
+    #addEventHeader, #signUpHeader {
+        font-size: 1.8rem;
+    }
+
+    /* Optimize modal widths for large screens */
+    #addEventInput {
+        width: 50%;
+        max-width: 1000px;
+    }
+
+    #inputs, #tableForm {
+        width: 50%;
+        max-width: 900px;
+    }
+
+    /* Table adjustments */
+    table, th, td {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    th {
+        font-size: 1.1rem;
+    }
+
+    /* Event grid layout */
+    .eventBox {
+        max-width: 500px;
+        margin: 15px auto;
+    }
+
+    #eventsMenu {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    /* Dropdown menu adjustments */
+    #optionBarTrigger {
+        width: 15%;
+        font-size: 1rem;
+    }
+
+    #dropdown {
+        width: 14%;
+    }
+
+    #dropdown p {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* Form inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    textarea {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    /* Admin page styling */
+    .user-table {
+        font-size: 1rem;
+    }
+
+    .user-table th,
+    .user-table td {
+        padding: 15px;
+    }
+
+    .admin-badge {
+        padding: 6px 12px;
+        font-size: 1rem;
+    }
+
+    .toggle-btn {
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+
+    .stats-box {
+        padding: 20px 30px;
+        margin: 15px 30px 15px 0;
+    }
+
+    .stats-box h3 {
+        font-size: 1.1rem;
+    }
+
+    .stats-box p {
+        font-size: 1.6rem;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR EXTRA-LARGE DISPLAYS (2560px and above) ===== */
+
+@media (min-width: 2560px) {
+    body {
+        font-size: 18px;
+    }
+
+    .headerItem {
+        font-size: 2.1rem;
+    }
+
+    #CITSignups {
+        font-size: 2.8rem;
+    }
+
+    .eventTitle {
+        font-size: 2.2rem;
+        padding: 2.5rem;
+    }
+
+    .big-button {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
+
+    .eventBox {
+        max-width: 600px;
+    }
+
+    #addEventInput {
+        width: 45%;
+        max-width: 1200px;
+    }
+
+    table, th, td {
+        padding: 16px;
+        font-size: 1.1rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    textarea {
+        font-size: 1.1rem;
+        padding: 12px;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR MEDIUM LAPTOP SCREENS (ThinkPads, etc.) ===== */
+
+@media (max-width: 1600px) {
+    .headerItem {
+        font-size: 115%;
+        padding: 8px 14px;
+    }
+
+    #navLinks {
+        gap: 8px;
+    }
+
+    #homePage {
+        width: 22%;
+    }
+
+    #CITSignups {
+        font-size: 3vw;
+    }
+
+    #CITLogo {
+        width: 16%;
+        height: 18%;
+    }
+}
+
+@media (max-width: 1366px) {
+    .headerItem {
+        font-size: 105%;
+        padding: 7px 12px;
+    }
+
+    #navLinks {
+        gap: 6px;
+    }
+
+    #homePage {
+        width: 24%;
+    }
+
+    #CITSignups {
+        font-size: clamp(1.2rem, 2.3vw, 2rem);
+        left: 3%;
+    }
+
+    #CITLogo {
+        width: 15%;
+        height: 16%;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN FOR MOBILE AND TABLET SCREENS ===== */
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    #headerSection {
+        height: 11.5%;
+    }
+
+    .headerItem {
+        font-size: 150%;
+    }
+
+    #CITSignups {
+        font-size: clamp(1.1rem, 4.2vw, 1.5rem);
+        left: 2%;
+        margin-top: 0;
+    }
+
+    #homePage {
+        width: 58%;
+    }
+
+    #optionBarTrigger {
+        width: 32%;
+        font-size: 0.9rem;
+    }
+
+    #signinText {
+        max-width: 110px;
+    }
+
+    #dropdown {
+        width: 25%;
+    }
+
+    #bodySection {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    .eventTitle {
+        font-size: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    #addEventInput {
+        width: 90%;
+        max-width: none;
+        max-height: 90vh;
+    }
+
+    #inputs, #tableForm {
+        width: 85%;
+        max-width: none;
+    }
+
+    table {
+        width: 95%;
+        left: 2.5%;
+        font-size: 0.9rem;
+    }
+
+    table, th, td {
+        padding: 8px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    textarea {
+        width: 90%;
+        font-size: 1rem;
+    }
+
+    .big-button {
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .user-table {
+        font-size: 0.9rem;
+    }
+
+    .user-table th,
+    .user-table td {
+        padding: 10px;
+    }
+
+    .admin-badge {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+
+    .toggle-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    .stats-box {
+        display: block;
+        margin: 10px 0;
+        padding: 12px 15px;
+    }
+
+    .controls-section {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
