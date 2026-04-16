@@ -14,7 +14,7 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: drhscit.org
-          port: 4243
+          port: 2323
           username: migration_user
           key: ${{ secrets.SSH_KEY }}
           script: |
