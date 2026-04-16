@@ -15,7 +15,7 @@ jobs:
         with:
           host: drhscit.org
           port: 2323
-          username: migration_user
+          username: drsu
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/drsu/www
