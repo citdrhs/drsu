@@ -42,6 +42,15 @@ table {
     width: 90%;
     left: 5%;
     table-layout: fixed;
+    overflow: hidden;
+}
+
+#tables table th,
+#tables table td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+    vertical-align: top;
 }
 
 /* Column width specifications */

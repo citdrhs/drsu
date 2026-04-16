@@ -51,11 +51,13 @@ def create_app():
    # global global_app
     #app=Flask(__name__)
 
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Or another SMTP server
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtppro.zoho.com')
+    app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 465))
+    app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'false').lower() == 'true'
+    app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'true').lower() == 'true'
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') or os.environ.get('EMAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') or os.environ.get('EMAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
     app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024
     mail = Mail(app)  # Initialize mail here
 
@@ -1038,6 +1040,12 @@ def create_app():
         signups = cur.fetchall()
         email_list = [signup[0] for signup in signups]
 
+        if not email_list:
+            flash("No participant emails found for this event yet.", "warning")
+            cur.close()
+            conn.close()
+            return redirect(url_for('viewEvent', event_id=event_id))
+
         if request.method == 'POST':
             template_type = request.form.get('template')
             subject = request.form.get('subject')
@@ -1067,6 +1075,7 @@ def create_app():
             # Send emails to all participants
             try:
                 sent_count = 0
+                failed_recipients = []
                 for recipient in email_list:
                     try:
                         msg = Message(subject, sender=app.config['MAIL_USERNAME'], recipients=[recipient])
@@ -1075,12 +1084,17 @@ def create_app():
                         sent_count += 1
                     except Exception as e:
                         print(f"Failed to send email to {recipient}: {str(e)}")
+                        failed_recipients.append((recipient, str(e)))
                         continue
 
                 if sent_count > 0:
-                    flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "success")
+                    if failed_recipients:
+                        flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "warning")
+                    else:
+                        flash(f"Reminder emails sent to {sent_count} out of {len(email_list)} recipient(s).", "success")
                 else:
-                    flash("Failed to send emails. Please check your email configuration.", "danger")
+                    first_error = failed_recipients[0][1] if failed_recipients else "Unknown mail error"
+                    flash(f"No emails were sent. Mail server response: {first_error}", "danger")
                 return redirect(url_for('viewEvent', event_id=event_id))
             except Exception as e:
                 flash(f"Error sending emails: {str(e)}", "danger")
