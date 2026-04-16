@@ -42,15 +42,6 @@ table {
     width: 90%;
     left: 5%;
     table-layout: fixed;
-    overflow: hidden;
-}
-
-#tables table th,
-#tables table td {
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    white-space: normal;
-    vertical-align: top;
 }
 
 /* Column width specifications */
@@ -124,16 +115,13 @@ tr:nth-child(even) td {
     color: black;
 }
 
-#inputs input[type="text"],
-#inputs textarea{
+#inputs input[type="text"]{
     width: 80%;
     font-size: 1.1vw;
-    box-sizing: border-box;
 }
 
 #extras{
-    min-height: 90px;
-    resize: vertical;
+    height: 4vw;
     font-size: 1vw;
 }
 
@@ -238,15 +226,6 @@ tr:nth-child(even) td {
     position: relative;
     padding: 0%;
     margin: 0px;
-}
-
-.comment-content p {
-    margin: 10px;
-    max-height: 220px;
-    overflow-y: auto;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    white-space: pre-wrap;
 }
 
 .close-button {
