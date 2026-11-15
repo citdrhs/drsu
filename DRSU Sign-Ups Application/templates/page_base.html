@@ -6,6 +6,7 @@
     <title>{% block title %} {% endblock %}</title>
     <link rel="icon" href="{{ url_for('static', filename='images/CITLogo.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='modern.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
     <!--Placeholder for extra styling and js for home page and signup pages-->
     
@@ -13,50 +14,41 @@
 </head>
 <body>
     <!--Header-->
-    <div id="headerSection">
-        <section id="homePage" data-url="{{ url_for('homePage') }}">
-            <img src="{{ url_for('static', filename='images/CITLogo.png') }}" alt="Logo" id="CITLogo">
+    <header id="headerSection">
+        <a id="homePage" href="{{ url_for('homePage') }}" data-url="{{ url_for('homePage') }}">
+            <img src="{{ url_for('static', filename='images/CITLogo.png') }}" alt="" id="CITLogo">
             <p id="CITSignups">CIT Signups</p>
-        </section>        
+        </a>
     
         <!-- Navigation Links -->
-        <div id="navLinks">
-            <p class="headerItem">
-                <a href="{{ url_for('about') }}" class="headerLink">About</a>
-            </p>
-            <p class="headerItem">
-                <a href="{{ url_for('calendar') }}" class="headerLink">Calendar</a>
-            </p>
-            <p class="headerItem">
-                <a href="{{ url_for('homePage') }}" class="headerLink">Events</a>
-            </p>
+        <nav id="navLinks" aria-label="Main navigation">
+            <a href="{{ url_for('about') }}" class="headerItem headerLink">About</a>
+            <a href="{{ url_for('calendar') }}" class="headerItem headerLink">Calendar</a>
+            <a href="{{ url_for('homePage') }}" class="headerItem headerLink">Events</a>
             <!-- Admin Management Link - Only visible to admins -->
             {% if admin is defined and admin %}
-            <p class="headerItem">
-                <a href="{{ url_for('manage_admins') }}" class="headerLink">Manage Admins</a>
-            </p>
-            <p class="headerItem">
-                <a href="{{ url_for('archived_events') }}" class="headerLink">Archived Events</a>
-            </p>
+            <a href="{{ url_for('manage_admins') }}" class="headerItem headerLink">Manage Admins</a>
+            <a href="{{ url_for('archived_events') }}" class="headerItem headerLink">Archived Events</a>
             {% endif %}
-        </div>
+        </nav>
         
-        <div id="optionBarTrigger">
-            <p class="headerItem" id="signinText">{{email.split('@')[0] if email else 'User'}}</p>
-        </div>
-        
-        <section id="dropdown">
-            <a href="{{url_for('account_details')}}"><p id="accountDetails">Account Details</p></a>
-            <a href="{{url_for('logout')}}"><p id="logOut">Log Out</p></a>
-        </section>
-    </div>
+        <details id="accountMenu">
+            <summary id="optionBarTrigger">
+                <span class="headerItem" id="signinText">{{email.split('@')[0] if email else 'User'}}</span>
+            </summary>
+            <div id="dropdown">
+                <a href="{{url_for('account_details')}}"><span id="accountDetails">Account Details</span></a>
+                <a href="{{url_for('logout')}}"><span id="logOut">Log Out</span></a>
+            </div>
+        </details>
+    </header>
     
 
-    <div id="bodySection">
+    <main id="bodySection">
         <!--Placeholder for page heading and expectations for home page and event details for signup pages-->
         {% block heading %} {% endblock %}
 
         {% block content %} {% endblock %}
-    </div>
+    </main>
 </body>
 </html>
