@@ -22,18 +22,19 @@
             {% if events|length == 0 %}
                 <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">No archived events</p>
             {% else %}
-                <section id="#eventsMenu">
+                <section id="eventsMenu">
                     {% for event in events %}
                     
-                        <a href="{{ url_for('viewEvent', event_id = event[0]) }}">
                             <section class="roundedBox eventBox" style="background-image: url('{{ url_for('static', filename='images/' ~ event[7]) }}');">
                                 <!--
                                     Integrates style attribute to grab background_image, Does not cause error
                                     Don't worry about the red stuff if it really bothers you it can probably be better done using js
                                 -->
-                                <h1 class="eventTitle">
-                                  <span class="eventDimmer">{{ event[1] }}</span>
-                                </h1>
+                                <a class="eventTitleLink" href="{{ url_for('viewEvent', event_id = event[0]) }}">
+                                    <h1 class="eventTitle">
+                                      <span class="eventDimmer">{{ event[1] }}</span>
+                                    </h1>
+                                </a>
                                 
                                 <section class="eventInfo">
                                     <p><b>Date: </b>{{ event[2] }}</p>
@@ -45,13 +46,11 @@
                                 </section>
                                 {% if admin %}
                                     <form method="POST" action="{{ url_for('unarchive_event', event_id=event[0]) }}" style="display:inline;">
-                                        <button type="submit" class="edit-event-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🔄 Unarchive</button>
+                                        <button type="submit" class="edit-event-button secondary-button">🔄 Unarchive</button>
                                     </form>
                                     <br>
                                 {% endif %}
                             </section>
-                            
-                        </a>
                     {% endfor %}
                 </section>
             {% endif %}

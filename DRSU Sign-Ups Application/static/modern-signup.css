@@ -1,0 +1,118 @@
+#tables {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line, #dce5e9);
+    border-radius: 12px;
+    background: var(--surface, #fff);
+    -webkit-overflow-scrolling: touch;
+}
+
+#tables table {
+    position: static;
+    width: 100%;
+    min-width: 620px;
+    margin: 0;
+    table-layout: auto;
+    border: 0;
+    border-radius: 0;
+}
+
+#tables th,
+#tables td {
+    padding: 0.75rem;
+    border: 0;
+    border-bottom: 1px solid var(--line, #dce5e9);
+    background: var(--surface, #fff);
+    color: var(--ink, #172b3a);
+}
+
+#tables thead th {
+    background: var(--navy, #12344a);
+    color: #fff;
+    text-align: left;
+}
+
+#tables tbody tr:nth-child(even) td {
+    background: #f5f8f9;
+}
+
+#tables tfoot td {
+    background: #f5f8f9;
+    text-align: left;
+}
+
+#tables .table-note {
+    border-left: 3px solid var(--teal, #157a72);
+    background: var(--soft-blue, #eaf3f6);
+    color: var(--ink, #172b3a);
+    font-style: italic;
+    font-weight: 600;
+}
+
+#tables .table-note strong {
+    color: var(--teal, #157a72);
+}
+
+#tableForm {
+    top: 50%;
+    left: 50%;
+    width: min(560px, calc(100vw - 2rem));
+    height: auto;
+    max-height: calc(100vh - 2rem);
+    padding: 1.25rem;
+    overflow: auto;
+    border: 1px solid var(--line, #dce5e9);
+    border-radius: 16px;
+    background: var(--surface, #fff);
+    box-shadow: 0 24px 70px rgba(12, 39, 57, 0.28);
+    transform: translate(-50%, -50%);
+}
+
+#tableForm br {
+    display: none;
+}
+
+#tableForm input,
+#tableForm textarea {
+    margin: 0.4rem 0 0.8rem;
+}
+
+#extras {
+    min-height: 100px;
+}
+
+#confirm {
+    width: 100%;
+    min-height: 44px;
+}
+
+.eventDetails {
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.eventDetails h2 {
+    margin-top: 0;
+    color: var(--ink, #172b3a);
+}
+
+.eventDetails p {
+    margin: 0.35rem 0;
+    color: var(--muted, #587080);
+}
+
+@media (max-width: 520px) {
+    #tables table {
+        min-width: 580px;
+    }
+
+    .icon-button {
+        min-width: 40px;
+        min-height: 40px;
+    }
+}

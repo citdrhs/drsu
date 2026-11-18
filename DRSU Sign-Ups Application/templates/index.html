@@ -23,7 +23,7 @@
                 <button class="big-button" id="showAddEventInput">Add an event</button>
                 <br><br>
             {% endif %}
-            <section id="#eventsMenu">
+            <section id="eventsMenu">
                 {% for event in events %}
                     <section class="roundedBox eventBox" style="background-image: url('{{ url_for('static', filename='images/' ~ event[7]) }}');">
                         <a href="{{ url_for('viewEvent', event_id = event[0]) }}" class="eventTitleLink">
@@ -47,10 +47,10 @@
                             {% if admin %}
                                 <button class="edit-event-button" onclick="editEvent('{{ event[0] }}', '{{ event[1] }}', '{{ event[11] }}', '{{ event[3] }}', '{{ event[4] }}', '{{ event[5] }}', '{{ event[6] }}', '{{ event[8] }}')">✏️ Edit Event</button>
                                 <form method="POST" action="{{ url_for('archive_event', event_id=event[0]) }}" style="display:inline;">
-                                    <button type="submit" class="edit-event-button" style="background: linear-gradient(135deg, #d4a574 0%, #c27a3a 100%);">📦 Archive</button>
+                                    <button type="submit" class="edit-event-button secondary-button">📦 Archive</button>
                                 </form>
                                 <form method="POST" action="{{ url_for('delete_event', event_id=event[0]) }}" style="display:inline;">
-                                    <button type="submit" class="edit-event-button" style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);" onclick="return confirm('Delete this event and all its signups? This cannot be undone.');">🗑 Delete</button>
+                                    <button type="submit" class="edit-event-button danger-button" onclick="return confirm('Delete this event and all its signups? This cannot be undone.');">🗑 Delete</button>
                                 </form>
                                 <br>
                             {% endif %}
