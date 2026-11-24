@@ -63,7 +63,11 @@
                 <thead>
                     <tr>
                         <th id="{{ table_info[2] }}_th" colspan="4">
+                            {% if max_entries[table_id] == 999 %}
+                            {{ table_info[2] }} — Unlimited signups ({{ signups|length }} signed up)
+                            {% else %}
                             {{ table_info[2] }} ({{ max_entries[table_id] - signups|length }}/{{ max_entries[table_id] }}) Slots Available
+                            {% endif %}
                         </th>
                     </tr>
                     {% if table_info[5] %}
@@ -125,7 +129,7 @@
                                 <button class="big-button delete-table-button" data-url="{{ url_for('delete_table', id=table_info[0]) }}">Delete Table</button>
                                 <button class="edit-table-button big-button" data-table-id="{{ table_info[0] }}" data-category="{{ table_info[2] }}" data-max-entries="{{ table_info[3] }}" data-vieworder="{{ table_info[4] }}" data-notes="{{ table_info[5] or '' }}">Edit Table</button>
                             {% endif %}
-                            {% if max_entries[table_id] - signups|length > 0 %}
+                            {% if max_entries[table_id] == 999 or max_entries[table_id] - signups|length > 0 %}
                                 <button class="big-button signUpButton" data-table-id="{{ table_info[0] }}" id="{{ table_info[2] }}">Sign up</button>
                             {% endif %}
                         </td>
@@ -143,7 +147,7 @@
         <label for="tableName">Category Name:</label>
         <input type="text" id="tableName" name="category" required>
         <br>
-        <label for="maxEntries">Max Entries:</label>
+        <label for="maxEntries">Max Entries (999 = unlimited):</label>
         <input type="number" id="maxEntries" name="max_entries" required>
         <br>
         <label for="vieworder">Appearance Order:</label>
