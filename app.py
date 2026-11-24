@@ -13,6 +13,7 @@ from flask import flash
 from better_profanity import profanity
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
+from reminders import ReminderSchedule, init_reminders, reminder_templates
 
 
 #==================================================================================================================================================================#
@@ -150,6 +151,7 @@ def create_app():
     
     # Run migrations on app startup
     run_migrations()
+    init_reminders(app, mail, get_db_connection)
     
     #Formats date name to text, ex. 2012-04-13 --> April 13th, 2012
     def format_date_with_suffix(date_obj):
@@ -901,33 +903,20 @@ def create_app():
             WHERE et.event_id = %s
         ''', (event_id,))
         signups = cur.fetchall()
-        email_list = [signup[0] for signup in signups]
+        email_list = [signup[0] for signup in signups if signup[0] and signup[0].strip()]
+        cur.close()
+        conn.close()
 
         if request.method == 'POST':
-            template_type = request.form.get('template')
             subject = request.form.get('subject')
             message = request.form.get('message')
 
-            # Preset templates
-            templates = {
-                'event_reminder': {
-                    'subject': f"Reminder: {event[1]} Event",
-                    'message': f"""Hello,\n\nThis is a friendly reminder about the upcoming event:\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nPlease make sure to fulfill your commitment.\n\nThank you!"""
-                },
-                'upcoming_event': {
-                    'subject': f"Upcoming Event: {event[1]}",
-                    'message': f"""Hello,\n\nWe're excited to remind you about our upcoming event!\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nWe look forward to seeing you there!\n\nThank you!"""
-                },
-                'last_minute': {
-                    'subject': f"Last-Minute Reminder: {event[1]}",
-                    'message': f"""Hello,\n\nThis is a last-minute reminder about:\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nPlease confirm your participation.\n\nThank you!"""
-                }
-            }
-
-            # Use template or custom message
-            if template_type in templates:
-                subject = templates[template_type]['subject']
-                message = templates[template_type]['message']
+            if not subject or not subject.strip() or not message or not message.strip():
+                flash('Enter an email subject and message.', 'danger')
+                return redirect(url_for('send_reminder', event_id=event_id))
+            if not email_list:
+                flash('No participant emails found for this event yet.', 'warning')
+                return redirect(url_for('send_reminder', event_id=event_id))
 
             # Send emails to all participants
             try:
@@ -951,12 +940,11 @@ def create_app():
                 flash(f"Error sending emails: {str(e)}", "danger")
                 print(e)
 
-        cur.close()
-        conn.close()
-
         return render_template('send_reminder.html', 
                              event=event, 
                              email_count=len(email_list),
+                             reminder_schedule=db.session.get(ReminderSchedule, event_id),
+                             templates=reminder_templates(event),
                              admin=True,
                              email=session.get('email'))
 
