@@ -290,9 +290,9 @@ def create_app():
         # Using LEFT JOIN so events show even if contact email isn't in user table
         # Filter out archived events for non-admins
         if is_admin:
-            cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
+            cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
         else:
-            cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
+            cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
         events = cur.fetchall()
         #Print statement for TESTING
         print("These are the events")
@@ -313,10 +313,10 @@ def create_app():
                 event[4],  # End Time
                 event[5],  # Location
                 event[6],  # Email
-                event[9],   # Background image filename (the updated one we want)
+                event[7],   # Background image filename (the updated one we want)
                 event[8],  # Notes
-                event[10],  # First name
-                event[11],  # Last name
+                event[9],  # First name
+                event[10],  # Last name
                 event[2]  # Original date
             )
             formatted_dates.append(updated_event)
@@ -410,7 +410,7 @@ def create_app():
         cur = conn.cursor()
 
         #Grabs list of archived events
-        cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = TRUE ORDER BY t1.date DESC;')
+        cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = TRUE ORDER BY t1.date DESC;')
         events = cur.fetchall()
 
         #List of events with formatted dates
@@ -427,10 +427,10 @@ def create_app():
                 event[4],  # End Time
                 event[5],  # Location
                 event[6],  # Email
-                event[9],   # Background image filename
+                event[7],   # Background image filename
                 event[8],  # Notes
-                event[10],  # First name
-                event[11],  # Last name
+                event[9],  # First name
+                event[10],  # Last name
                 event[2]  # Original date
             )
             formatted_dates.append(updated_event)
@@ -506,6 +506,7 @@ def create_app():
         for event in events:
             events_for_calendar.append({
                 'id': event[0],
+                'url': url_for('viewEvent', event_id=event[0]),
                 'title': event[1],
                 'date': str(event[2]),  # Convert to string for JSON
                 'time': f"{event[3]} - {event[4]}"

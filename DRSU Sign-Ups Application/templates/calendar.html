@@ -100,7 +100,7 @@
                     eventBox.style.cursor = 'pointer';
                     eventBox.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        window.location.href = `/viewEvent/${event.id}`;
+                        window.location.href = event.url;
                     });
                     dayCell.appendChild(eventBox);
             });
