@@ -827,6 +827,8 @@ def create_app():
             users = sorted(users, key=lambda u: u.first_name.lower(), reverse=reverse)
         elif sort_by == 'email':
             users = sorted(users, key=lambda u: u.email.lower(), reverse=reverse)
+        elif sort_by == 'permission':
+            users = sorted(users, key=lambda u: (not u.is_admin if reverse else u.is_admin, u.last_name.lower(), u.first_name.lower(), u.email.lower()))
         elif sort_by == 'grade':
             users = sorted(users, key=lambda u: (int(u.grade) if u.grade and str(u.grade).isdigit() else 999, u.last_name.lower(), u.first_name.lower()), reverse=reverse)
         else:  # Default sort by last name

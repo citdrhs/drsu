@@ -242,12 +242,14 @@
         
         <div class="controls-section">
             <form method="GET" action="{{ url_for('manage_admins') }}" class="search-box">
+                <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                <input type="hidden" name="sort_order" value="{{ sort_order }}">
                 <label for="search">Search:</label>
                 <input type="text" id="search" name="search" placeholder="Enter name or email..." value="{{ search_query }}">
                 <div class="button-group">
                     <button type="submit" class="search-submit">Search</button>
                     {% if search_query %}
-                        <a href="{{ url_for('manage_admins') }}" class="clear-search">Clear</a>
+                        <a href="{{ url_for('manage_admins', sort_by=sort_by, sort_order=sort_order) }}" class="clear-search">Clear</a>
                     {% endif %}
                 </div>
             </form>
@@ -260,10 +262,11 @@
                         <option value="firstname" {% if sort_by == 'firstname' %}selected{% endif %}>First Name</option>
                         <option value="email" {% if sort_by == 'email' %}selected{% endif %}>Email</option>
                         <option value="grade" {% if sort_by == 'grade' %}selected{% endif %}>Grade</option>
+                        <option value="permission" {% if sort_by == 'permission' %}selected{% endif %}>Permission Level</option>
                     </select>
                     <select id="sort_order" name="sort_order" onchange="this.form.submit()">
-                        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
-                        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+                        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>{{ 'Regular users first' if sort_by == 'permission' else 'Ascending' }}</option>
+                        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>{{ 'Admins first' if sort_by == 'permission' else 'Descending' }}</option>
                     </select>
                 </div>
                 {% if search_query %}
