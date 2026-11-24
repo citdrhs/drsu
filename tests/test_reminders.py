@@ -1,11 +1,17 @@
-"""Run with python -m unittest discover -s tests. No real database or email is used."""
+"""Run with python -m unittest discover -s tests. Uses SQLite and loopback SMTP only."""
 import tempfile
 import unittest
+import socketserver
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
+from email import policy
+from email.parser import BytesParser
 from pathlib import Path
 from unittest.mock import Mock
 
 from flask import Flask
+from flask_mail import Mail
 from models import db
 from reminders import (EASTERN, ReminderSchedule, init_reminders,
                        scheduled_time, send_due_reminders)
@@ -25,10 +31,33 @@ class Cursor:
         self.query, self.event_id = query, params[0]
 
     def fetchone(self):
+        if getattr(self.fixture, 'read_barrier', None):
+            self.fixture.read_barrier.wait(timeout=5)
         return self.fixture.events.get(self.event_id)
 
     def fetchall(self):
         return [(email,) for email in set(self.fixture.recipients.get(self.event_id, []))]
+
+
+class LocalSMTP(socketserver.StreamRequestHandler):
+    """Capture SMTP on loopback without forwarding email anywhere."""
+    def handle(self):
+        self.request.settimeout(5)
+        self.wfile.write(b'220 local test server\r\n')
+        while line := self.rfile.readline():
+            command = line.split(b' ', 1)[0].strip().upper()
+            if command == b'DATA':
+                self.wfile.write(b'354 End with a dot\r\n')
+                lines = []
+                while (line := self.rfile.readline()) not in (b'.\r\n', b''):
+                    lines.append(line[1:] if line.startswith(b'..') else line)
+                self.server.messages.append(BytesParser(policy=policy.default).parsebytes(b''.join(lines)))
+                self.wfile.write(b'250 Captured\r\n')
+            elif command == b'QUIT':
+                self.wfile.write(b'221 Bye\r\n')
+                break
+            else:
+                self.wfile.write(b'250 OK\r\n')
 
 
 class ReminderTests(unittest.TestCase):
@@ -123,6 +152,44 @@ class ReminderTests(unittest.TestCase):
         self.run_due()
         self.assertEqual(self.mail.send.call_count, 2)
         self.assertEqual(db.session.get(ReminderSchedule, 1).status, 'sent')
+
+    def test_workers_racing_for_the_same_pending_schedule_send_once(self):
+        self.save()
+        due = self.due()
+        self.read_barrier = threading.Barrier(2)
+        def worker():
+            with self.app.app_context():
+                send_due_reminders(self.app, self.mail, self.get_connection, due)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(worker) for _ in range(2)]
+            for future in futures:
+                future.result(timeout=10)
+        self.read_barrier = None
+        db.session.expire_all()
+        self.assertEqual(self.mail.send.call_count, 2)
+        self.assertEqual(db.session.get(ReminderSchedule, 1).status, 'sent')
+
+    def test_actual_smtp_delivery_to_local_capture_server(self):
+        self.save()
+        with socketserver.ThreadingTCPServer(('127.0.0.1', 0), LocalSMTP) as server:
+            server.messages = []
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                self.app.config.update(MAIL_SERVER='127.0.0.1', MAIL_PORT=server.server_address[1],
+                    MAIL_USE_TLS=False, MAIL_USE_SSL=False, MAIL_USERNAME=None, MAIL_PASSWORD=None,
+                    MAIL_DEFAULT_SENDER='sender@example.test', MAIL_SUPPRESS_SEND=False)
+                mail = Mail(self.app)
+                send_due_reminders(self.app, mail, self.get_connection, self.due())
+                self.assertEqual(len(server.messages), 2)
+                self.assertEqual({str(message['To']) for message in server.messages}, set(self.recipients[1]))
+                for message in server.messages:
+                    self.assertEqual(message['Subject'], 'Our edited subject')
+                    self.assertEqual(message.get_content().strip(), 'Our edited message')
+                self.assertEqual(db.session.get(ReminderSchedule, 1).status, 'sent')
+            finally:
+                server.shutdown()
+                thread.join(timeout=5)
 
     def test_cancel_prevents_send(self):
         self.save()

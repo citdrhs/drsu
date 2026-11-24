@@ -59,7 +59,23 @@ worker stops mid-send, the status stays **Sending**; check mail/server logs befo
 manually recovering that schedule. A successful SMTP submission is not proof of
 inbox delivery. Monitor cron/server logs so an inactive worker is detected.
 
-Run the isolated reminder tests with `python -m unittest discover -s tests`.
+Run the isolated checks from the repository root (Python requirements and Node.js
+must be installed):
+
+```sh
+python -m unittest discover -s tests
+python tests/verify_event_flows.py .
+python tests/verify_event_flows.py "DRSU Sign-Ups Application"
+cd "DRSU Sign-Ups Application"
+python -m unittest discover -s ../tests
+```
+
+These checks use SQLite fixtures, synthetic accounts, and a loopback SMTP capture
+server. They cover the actual event routes/templates, calendar click JavaScript,
+uploads, unlimited signups, permission sorting, and manual/scheduled reminders.
+They do not validate the production PostgreSQL schema or mail-provider credentials.
+When event details change, review the saved email text: the send date follows the
+event date, but a saved custom email is not rewritten automatically.
 
 ## Unlimited donations and holiday background
 
