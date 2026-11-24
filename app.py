@@ -13,6 +13,7 @@ from flask import flash
 from better_profanity import profanity
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
+from reminders import ReminderSchedule, init_reminders, reminder_templates
 
 
 #==================================================================================================================================================================#
@@ -150,6 +151,7 @@ def create_app():
     
     # Run migrations on app startup
     run_migrations()
+    init_reminders(app, mail, get_db_connection)
     
     #Formats date name to text, ex. 2012-04-13 --> April 13th, 2012
     def format_date_with_suffix(date_obj):
@@ -290,9 +292,9 @@ def create_app():
         # Using LEFT JOIN so events show even if contact email isn't in user table
         # Filter out archived events for non-admins
         if is_admin:
-            cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
+            cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
         else:
-            cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
+            cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = FALSE ORDER BY t1.date ASC;')
         events = cur.fetchall()
         #Print statement for TESTING
         print("These are the events")
@@ -313,10 +315,10 @@ def create_app():
                 event[4],  # End Time
                 event[5],  # Location
                 event[6],  # Email
-                event[9],   # Background image filename (the updated one we want)
+                event[7],   # Background image filename (the updated one we want)
                 event[8],  # Notes
-                event[10],  # First name
-                event[11],  # Last name
+                event[9],  # First name
+                event[10],  # Last name
                 event[2]  # Original date
             )
             formatted_dates.append(updated_event)
@@ -410,7 +412,7 @@ def create_app():
         cur = conn.cursor()
 
         #Grabs list of archived events
-        cur.execute('SELECT t1.*,COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = TRUE ORDER BY t1.date DESC;')
+        cur.execute('SELECT t1.id, t1.name, t1.date, t1.start_time, t1.end_time, t1.location, t1.contact, t1.file_name, t1.event_note, COALESCE(t2.first_name, \'\') as first_name, COALESCE(t2.last_name, \'\') as last_name FROM events AS t1 LEFT JOIN public.user AS t2 ON t2.email=t1.contact WHERE COALESCE(t1.archived, FALSE) = TRUE ORDER BY t1.date DESC;')
         events = cur.fetchall()
 
         #List of events with formatted dates
@@ -427,10 +429,10 @@ def create_app():
                 event[4],  # End Time
                 event[5],  # Location
                 event[6],  # Email
-                event[9],   # Background image filename
+                event[7],   # Background image filename
                 event[8],  # Notes
-                event[10],  # First name
-                event[11],  # Last name
+                event[9],  # First name
+                event[10],  # Last name
                 event[2]  # Original date
             )
             formatted_dates.append(updated_event)
@@ -506,6 +508,7 @@ def create_app():
         for event in events:
             events_for_calendar.append({
                 'id': event[0],
+                'url': url_for('viewEvent', event_id=event[0]),
                 'title': event[1],
                 'date': str(event[2]),  # Convert to string for JSON
                 'time': f"{event[3]} - {event[4]}"
@@ -824,6 +827,8 @@ def create_app():
             users = sorted(users, key=lambda u: u.first_name.lower(), reverse=reverse)
         elif sort_by == 'email':
             users = sorted(users, key=lambda u: u.email.lower(), reverse=reverse)
+        elif sort_by == 'permission':
+            users = sorted(users, key=lambda u: (not u.is_admin if reverse else u.is_admin, u.last_name.lower(), u.first_name.lower(), u.email.lower()))
         elif sort_by == 'grade':
             users = sorted(users, key=lambda u: (int(u.grade) if u.grade and str(u.grade).isdigit() else 999, u.last_name.lower(), u.first_name.lower()), reverse=reverse)
         else:  # Default sort by last name
@@ -900,33 +905,20 @@ def create_app():
             WHERE et.event_id = %s
         ''', (event_id,))
         signups = cur.fetchall()
-        email_list = [signup[0] for signup in signups]
+        email_list = [signup[0] for signup in signups if signup[0] and signup[0].strip()]
+        cur.close()
+        conn.close()
 
         if request.method == 'POST':
-            template_type = request.form.get('template')
             subject = request.form.get('subject')
             message = request.form.get('message')
 
-            # Preset templates
-            templates = {
-                'event_reminder': {
-                    'subject': f"Reminder: {event[1]} Event",
-                    'message': f"""Hello,\n\nThis is a friendly reminder about the upcoming event:\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nPlease make sure to fulfill your commitment.\n\nThank you!"""
-                },
-                'upcoming_event': {
-                    'subject': f"Upcoming Event: {event[1]}",
-                    'message': f"""Hello,\n\nWe're excited to remind you about our upcoming event!\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nWe look forward to seeing you there!\n\nThank you!"""
-                },
-                'last_minute': {
-                    'subject': f"Last-Minute Reminder: {event[1]}",
-                    'message': f"""Hello,\n\nThis is a last-minute reminder about:\n\n{event[1]}\nDate: {event[2]}\nTime: {event[3]} - {event[4]}\nLocation: {event[5]}\n\nPlease confirm your participation.\n\nThank you!"""
-                }
-            }
-
-            # Use template or custom message
-            if template_type in templates:
-                subject = templates[template_type]['subject']
-                message = templates[template_type]['message']
+            if not subject or not subject.strip() or not message or not message.strip():
+                flash('Enter an email subject and message.', 'danger')
+                return redirect(url_for('send_reminder', event_id=event_id))
+            if not email_list:
+                flash('No participant emails found for this event yet.', 'warning')
+                return redirect(url_for('send_reminder', event_id=event_id))
 
             # Send emails to all participants
             try:
@@ -950,12 +942,11 @@ def create_app():
                 flash(f"Error sending emails: {str(e)}", "danger")
                 print(e)
 
-        cur.close()
-        conn.close()
-
         return render_template('send_reminder.html', 
                              event=event, 
                              email_count=len(email_list),
+                             reminder_schedule=db.session.get(ReminderSchedule, event_id),
+                             templates=reminder_templates(event),
                              admin=True,
                              email=session.get('email'))
 

@@ -153,17 +153,32 @@
             <p><strong>Recipients:</strong> {{ email_count }} participants</p>
         </div>
 
+        {% if reminder_schedule %}
+        <div class="event-info">
+            <p><strong>Automatic reminder:</strong> {{ reminder_schedule.days_before }} day(s) before, at {{ reminder_schedule.send_time }} Eastern.</p>
+            <p><strong>Status:</strong> {{ {'scheduled': 'Scheduled', 'sending': 'Sending', 'sent': 'Sent', 'failed': 'Delivery failed — check the mail server before rescheduling', 'cancelled': 'Cancelled', 'no_recipients': 'No participants were signed up at send time'}[reminder_schedule.status] }}</p>
+            {% if reminder_schedule.status in ['sent', 'failed', 'sending'] %}
+            <p>{{ reminder_schedule.sent_count }} of {{ reminder_schedule.recipient_count }} emails sent.</p>
+            {% endif %}
+            {% if reminder_schedule.status == 'scheduled' %}
+            <form method="POST" action="{{ url_for('schedule_reminder', event_id=event[0]) }}">
+                <button type="submit" name="action" value="cancel" class="cancel-btn">Cancel automatic reminder</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+
         <form method="POST">
             <div class="form-group">
                 <label>Select a Template:</label>
                 <div class="template-buttons">
-                    <button type="button" class="template-btn" onclick="loadTemplate('event_reminder')">
+                    <button type="button" class="template-btn" onclick="loadTemplate('event_reminder', this)">
                         Event Reminder
                     </button>
-                    <button type="button" class="template-btn" onclick="loadTemplate('upcoming_event')">
+                    <button type="button" class="template-btn" onclick="loadTemplate('upcoming_event', this)">
                         Upcoming Event
                     </button>
-                    <button type="button" class="template-btn" onclick="loadTemplate('last_minute')">
+                    <button type="button" class="template-btn" onclick="loadTemplate('last_minute', this)">
                         Last-Minute Reminder
                     </button>
                 </div>
@@ -173,24 +188,23 @@
 
             <div class="form-group">
                 <label for="subject">Email Subject:</label>
-                <input type="text" name="subject" id="subject" value="Reminder: {{ event[1] }} Event" required>
+                <input type="text" name="subject" id="subject" value="{{ reminder_schedule.subject if reminder_schedule else templates.event_reminder.subject }}" required>
             </div>
 
             <div class="form-group">
                 <label for="message">Email Message:</label>
-                <textarea name="message" id="message" required>Hello,
-
-This is a friendly reminder about the upcoming event:
-
-{{ event[1] }}
-Date: {{ event[2] }}
-Time: {{ event[3] }} - {{ event[4] }}
-Location: {{ event[5] }}
-
-Please make sure to fulfill your commitment.
-
-Thank you!</textarea>
+                <textarea name="message" id="message" required>{{ reminder_schedule.message if reminder_schedule else templates.event_reminder.message }}</textarea>
             </div>
+
+            <fieldset class="form-group">
+                <legend>Automatic reminder</legend>
+                <label for="daysBefore">Days before the event:</label>
+                <input type="number" name="days_before" id="daysBefore" min="0" max="365" value="{{ reminder_schedule.days_before if reminder_schedule else 1 }}">
+                <label for="sendTime">Send at (Eastern time):</label>
+                <input type="time" name="send_time" id="sendTime" value="{{ reminder_schedule.send_time if reminder_schedule else '09:00' }}">
+                <p>Uses the email above and everyone signed up when it sends. Saving replaces this event's previous schedule. If the event date changes, the reminder follows the new date.</p>
+                <button type="submit" class="send-btn" formaction="{{ url_for('schedule_reminder', event_id=event[0]) }}">Save automatic reminder</button>
+            </fieldset>
 
             <div class="button-group">
                 <a href="{{ url_for('viewEvent', event_id=event[0]) }}" class="cancel-btn">Cancel</a>
@@ -200,55 +214,9 @@ Thank you!</textarea>
     </section>
 
     <script>
-        const templates = {
-            'event_reminder': {
-                subject: 'Reminder: {{ event[1] }} Event',
-                message: `Hello,
+        const templates = {{ templates | tojson }};
 
-This is a friendly reminder about the upcoming event:
-
-{{ event[1] }}
-Date: {{ event[2] }}
-Time: {{ event[3] }} - {{ event[4] }}
-Location: {{ event[5] }}
-
-Please make sure to fulfill your commitment.
-
-Thank you!`
-            },
-            'upcoming_event': {
-                subject: 'Upcoming Event: {{ event[1] }}',
-                message: `Hello,
-
-We're excited to remind you about our upcoming event!
-
-{{ event[1] }}
-Date: {{ event[2] }}
-Time: {{ event[3] }} - {{ event[4] }}
-Location: {{ event[5] }}
-
-We look forward to seeing you there!
-
-Thank you!`
-            },
-            'last_minute': {
-                subject: 'Last-Minute Reminder: {{ event[1] }}',
-                message: `Hello,
-
-This is a last-minute reminder about:
-
-{{ event[1] }}
-Date: {{ event[2] }}
-Time: {{ event[3] }} - {{ event[4] }}
-Location: {{ event[5] }}
-
-Please confirm your participation.
-
-Thank you!`
-            }
-        };
-
-        function loadTemplate(templateName) {
+        function loadTemplate(templateName, button) {
             const template = templates[templateName];
             if (template) {
                 document.getElementById('subject').value = template.subject;
@@ -259,7 +227,7 @@ Thank you!`
                 document.querySelectorAll('.template-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                event.target.classList.add('active');
+                button.classList.add('active');
             }
         }
 
